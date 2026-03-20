@@ -439,7 +439,7 @@ class DSAPI:
         self._api.DSSetJobQueue.argtypes = [POINTER(DSJOB), c_char_p]
         self._api.DSSetJobQueue.restype = c_int
 
-        res = self._api.DSSetJobQueue(job_name, queue_name)
+        res = self._api.DSSetJobQueue(job_name, encode_string(queue_name))
 
         if res != 0:
             self._raise_last_error("DSSetJobQueue")
