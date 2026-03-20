@@ -912,11 +912,11 @@ class DSAPI:
         if res != 0:
             self._raise_last_error("DSSetDisableJobHandler")
 
-    def DSLoadLibrary(self, api_lib_file: str) -> None:  # TODO: Use PathLike?
+    def DSLoadLibrary(self, file: Path) -> None:
         """Load the DataStage API shared library.
 
         Args:
-            api_lib_file: Path to ``vmdsapi.dll`` (Windows)
+            file: Path to ``vmdsapi.dll`` (Windows)
                 or ``libvmdsapi.so`` (UNIX).
 
         The relevant search-path variable must include the
@@ -927,12 +927,12 @@ class DSAPI:
         - **UNIX** — add the directory to ``LD_LIBRARY_PATH``,
             typically ``../IBM/InformationServer/Server/DSEngine/lib/``
         """
-        if not Path(api_lib_file).is_file():
-            msg = f"Library not found: {api_lib_file!r}"
+        if not file.is_file():
+            msg = f"Library not found: {file!r}"
             raise FileNotFoundError(msg)
 
         try:
-            self.__api = CDLL(api_lib_file)
+            self.__api = CDLL(str(file))
         except OSError as exc:
             msg = f"Cannot load the library: {exc!s}"
             raise OSError(msg) from exc
