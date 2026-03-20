@@ -68,7 +68,6 @@ class DSAPI:
     def __init__(self) -> None:
         self.__api: CDLL | None = None
         self.__project_name = None
-        self.__job_name = None
 
     @property
     def _api(self) -> CDLL:
@@ -172,7 +171,6 @@ class DSAPI:
 
         if not handle:
             self._raise_last_error("DSOpenJob")
-        self.__job_name = handle
         return handle
 
     def DSGetJobInfo(
@@ -950,4 +948,3 @@ class DSAPI:
     def DSUnloadLibrary(self) -> None:
         self.__api = None
         self.__project_name = None
-        self.__job_name = None
