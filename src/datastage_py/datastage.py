@@ -458,10 +458,10 @@ class DSAPI:
         self._api.DSCloseProject.restype = c_int
 
         res = self._api.DSCloseProject(project_name)
-        self.__project_name = None
 
         if res != 0:
             self._raise_last_error("DSCloseProject")
+        self.__project_name = None
 
     def DSSetJobLimit(
         self, job_name: JobHandle, limit_type: LimitType, limit_value: int
