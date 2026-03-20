@@ -1,5 +1,3 @@
-# ruff: noqa: RUF012
-
 """Data structures used in IBM DataStage API."""
 
 import platform

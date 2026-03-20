@@ -53,6 +53,9 @@ ignore = [
     "E501",
     "S105",
 ]
+"src/datastage_py/structures.py" = [
+    "RUF012",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
