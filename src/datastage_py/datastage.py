@@ -940,7 +940,7 @@ class DSAPI:
             raise FileNotFoundError(msg)
 
         try:
-            self.__api = CDLL(str(file))
+            self.__api = CDLL(file)
         except OSError as exc:
             msg = f"Cannot load the library: {exc!s}"
             raise OSError(msg) from exc
