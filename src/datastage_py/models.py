@@ -171,15 +171,15 @@ class Job:
         return timedelta(seconds=info.info.jobElapsed)
 
     @property
+    def pid(self) -> int:
+        info = self._get_info(JobInfoType.PID)
+        return int(info.info.jobPid)
+
+    @property
     def controller(self) -> str:
         """Controlling job name."""
         info = self._get_info(JobInfoType.CONTROLLER)
         return decode_bytes(info.info.jobController)
-
-    @property
-    def pid(self) -> int:
-        info = self._get_info(JobInfoType.PID)
-        return int(info.info.jobPid)
 
     @property
     def wave_number(self) -> int:
