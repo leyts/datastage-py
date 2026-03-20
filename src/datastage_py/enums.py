@@ -1,4 +1,4 @@
-"""Enum types for IBM DataStage API constants."""
+"""Enum types for the IBM DataStage API."""
 
 from enum import IntEnum, IntFlag, StrEnum
 

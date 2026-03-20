@@ -1,4 +1,4 @@
-"""High-level Pythonic wrapper classes for the IBM DataStage API."""
+"""High-level wrapper classes for the IBM DataStage API."""
 
 from typing import TYPE_CHECKING, Self
 

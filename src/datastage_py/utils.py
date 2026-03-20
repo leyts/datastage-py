@@ -1,4 +1,4 @@
-"""Encoding helpers and C string utilities for the IBM DataStage API."""
+"""Helpers and utilities for the IBM DataStage API."""
 
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast

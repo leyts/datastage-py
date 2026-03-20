@@ -1,4 +1,4 @@
-"""Data structures used in IBM DataStage API."""
+"""Data structures used in the IBM DataStage API."""
 
 import platform
 from ctypes import (
