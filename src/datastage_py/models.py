@@ -1,6 +1,7 @@
 """High-level wrapper classes for the IBM DataStage API."""
 
-from typing import TYPE_CHECKING, Self
+from functools import cached_property
+from typing import TYPE_CHECKING
 
 from datastage_py.enums import (
     JobInfoType,
@@ -16,9 +17,9 @@ from datastage_py.utils import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from enum import IntEnum
+    from datetime import datetime
     from types import TracebackType
+    from typing import Self
 
     from datastage_py.datastage import DSAPI, JobHandle, ProjectHandle
     from datastage_py.structures import (
@@ -27,18 +28,6 @@ if TYPE_CHECKING:
         DSPROJECTINFO,
         DSSTAGEINFO,
     )
-
-
-def _info_property(
-    info_type: IntEnum, field: str, converter: Callable[..., object]
-) -> property:
-    """Descriptor that extracts and converts a single info field."""
-
-    def fget(self: Project | Job | Stage | Link) -> object:
-        info = self._get_info(info_type)  # type: ignore[invalid-argument-type]
-        return converter(getattr(info.info, field))
-
-    return property(fget)
 
 
 class Project:
@@ -65,36 +54,35 @@ class Project:
     def _get_info(self, info_type: ProjectInfoType) -> DSPROJECTINFO:
         return self._api.DSGetProjectInfo(self._handle, info_type)
 
-    name = _info_property(
-        ProjectInfoType.NAME,
-        "projectName",
-        decode_bytes,
-    )
-    path = _info_property(
-        ProjectInfoType.PATH,
-        "projectPath",
-        decode_bytes,
-    )
-    host_name = _info_property(
-        ProjectInfoType.HOST_NAME,
-        "hostName",
-        decode_bytes,
-    )
-    install_tag = _info_property(
-        ProjectInfoType.INSTALL_TAG,
-        "installTag",
-        decode_bytes,
-    )
-    tcp_port = _info_property(
-        ProjectInfoType.TCP_PORT,
-        "tcpPort",
-        decode_bytes,
-    )
-    jobs = _info_property(
-        ProjectInfoType.JOB_LIST,
-        "jobList",
-        split_char_p,
-    )
+    @cached_property
+    def name(self) -> str:
+        info = self._get_info(ProjectInfoType.NAME)
+        return decode_bytes(info.info.projectName)
+
+    @cached_property
+    def path(self) -> str:
+        info = self._get_info(ProjectInfoType.PATH)
+        return decode_bytes(info.info.projectPath)
+
+    @cached_property
+    def host_name(self) -> str:
+        info = self._get_info(ProjectInfoType.HOST_NAME)
+        return decode_bytes(info.info.hostName)
+
+    @cached_property
+    def install_tag(self) -> str:
+        info = self._get_info(ProjectInfoType.INSTALL_TAG)
+        return decode_bytes(info.info.installTag)
+
+    @cached_property
+    def tcp_port(self) -> str:
+        info = self._get_info(ProjectInfoType.TCP_PORT)
+        return decode_bytes(info.info.tcpPort)
+
+    @property
+    def jobs(self) -> list[str]:
+        info = self._get_info(ProjectInfoType.JOB_LIST)
+        return split_char_p(info.info.jobList)
 
     def open_job(self, name: str) -> Job:
         """Open a job by name and return a :class:`Job` wrapper."""
@@ -126,106 +114,105 @@ class Job:
     def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
         return self._api.DSGetJobInfo(self._handle, info_type)
 
-    status = _info_property(
-        JobInfoType.STATUS,
-        "jobStatus",
-        JobStatus,
-    )
-    name = _info_property(
-        JobInfoType.NAME,
-        "jobName",
-        decode_bytes,
-    )
-    controller = _info_property(
-        JobInfoType.CONTROLLER,
-        "jobController",
-        decode_bytes,
-    )
-    start_time = _info_property(
-        JobInfoType.START_TIMESTAMP,
-        "jobStartTime",
-        timestamp_to_datetime,
-    )
-    last_time = _info_property(
-        JobInfoType.LAST_TIMESTAMP,
-        "jobLastTime",
-        timestamp_to_datetime,
-    )
-    wave_number = _info_property(
-        JobInfoType.WAVE_NO,
-        "jobWaveNumber",
-        int,
-    )
-    params = _info_property(
-        JobInfoType.PARAM_LIST,
-        "paramList",
-        split_char_p,
-    )
-    stages = _info_property(
-        JobInfoType.STAGE_LIST,
-        "stageList",
-        split_char_p,
-    )
-    user_status = _info_property(
-        JobInfoType.USER_STATUS,
-        "userStatus",
-        decode_bytes,
-    )
-    control = _info_property(
-        JobInfoType.CONTROL,
-        "jobControl",
-        int,
-    )
-    pid = _info_property(
-        JobInfoType.PID,
-        "jobPid",
-        int,
-    )
-    invocations = _info_property(
-        JobInfoType.INVOCATIONS,
-        "jobInvocations",
-        split_char_p,
-    )
-    interim_status = _info_property(
-        JobInfoType.INTERIM_STATUS,
-        "jobInterimStatus",
-        JobStatus,
-    )
-    invocation_id = _info_property(
-        JobInfoType.INVOCATION_ID,
-        "jobInvocationId",
-        decode_bytes,
-    )
-    description = _info_property(
-        JobInfoType.DESC,
-        "jobDesc",
-        decode_bytes,
-    )
-    full_description = _info_property(
-        JobInfoType.FULL_DESC,
-        "jobFullDesc",
-        decode_bytes,
-    )
-    elapsed = _info_property(
-        JobInfoType.ELAPSED,
-        "jobElapsed",
-        int,
-    )
-    dmi_service = _info_property(
-        JobInfoType.DMI_SERVICE,
-        "jobDMIService",
-        int,
-    )
-    multi_invokable = _info_property(
-        JobInfoType.MULTI_INVOKABLE,
-        "jobMultiInvokable",
-        bool,
-    )
-    restartable = _info_property(
-        JobInfoType.RESTARTABLE,
-        "jobRestartable",
-        bool,
-    )
+    @property
+    def status(self) -> JobStatus:
+        info = self._get_info(JobInfoType.STATUS)
+        return JobStatus(info.info.jobStatus)
+
+    @cached_property
+    def name(self) -> str:
+        info = self._get_info(JobInfoType.NAME)
+        return decode_bytes(info.info.jobName)
+
+    @property
+    def controller(self) -> str:
+        info = self._get_info(JobInfoType.CONTROLLER)
+        return decode_bytes(info.info.jobController)
+
+    @property
+    def start_time(self) -> datetime:
+        info = self._get_info(JobInfoType.START_TIMESTAMP)
+        return timestamp_to_datetime(info.info.jobStartTime)
+
+    @property
+    def last_time(self) -> datetime:
+        info = self._get_info(JobInfoType.LAST_TIMESTAMP)
+        return timestamp_to_datetime(info.info.jobLastTime)
+
+    @property
+    def wave_number(self) -> int:
+        info = self._get_info(JobInfoType.WAVE_NO)
+        return int(info.info.jobWaveNumber)
+
+    @property
+    def params(self) -> list[str]:
+        info = self._get_info(JobInfoType.PARAM_LIST)
+        return split_char_p(info.info.paramList)
+
+    @property
+    def stages(self) -> list[str]:
+        info = self._get_info(JobInfoType.STAGE_LIST)
+        return split_char_p(info.info.stageList)
+
+    @property
+    def user_status(self) -> str:
+        info = self._get_info(JobInfoType.USER_STATUS)
+        return decode_bytes(info.info.userStatus)
+
+    @property
+    def control(self) -> int:
+        info = self._get_info(JobInfoType.CONTROL)
+        return int(info.info.jobControl)
+
+    @property
+    def pid(self) -> int:
+        info = self._get_info(JobInfoType.PID)
+        return int(info.info.jobPid)
+
+    @property
+    def invocations(self) -> list[str]:
+        info = self._get_info(JobInfoType.INVOCATIONS)
+        return split_char_p(info.info.jobInvocations)
+
+    @property
+    def interim_status(self) -> JobStatus:
+        info = self._get_info(JobInfoType.INTERIM_STATUS)
+        return JobStatus(info.info.jobInterimStatus)
+
+    @property
+    def invocation_id(self) -> str:
+        info = self._get_info(JobInfoType.INVOCATION_ID)
+        return decode_bytes(info.info.jobInvocationId)
+
+    @property
+    def description(self) -> str:
+        info = self._get_info(JobInfoType.DESC)
+        return decode_bytes(info.info.jobDesc)
+
+    @property
+    def full_description(self) -> str:
+        info = self._get_info(JobInfoType.FULL_DESC)
+        return decode_bytes(info.info.jobFullDesc)
+
+    @property
+    def elapsed(self) -> int:
+        info = self._get_info(JobInfoType.ELAPSED)
+        return int(info.info.jobElapsed)
+
+    @property
+    def dmi_service(self) -> int:
+        info = self._get_info(JobInfoType.DMI_SERVICE)
+        return int(info.info.jobDMIService)
+
+    @property
+    def multi_invokable(self) -> bool:
+        info = self._get_info(JobInfoType.MULTI_INVOKABLE)
+        return bool(info.info.jobMultiInvokable)
+
+    @property
+    def restartable(self) -> bool:
+        info = self._get_info(JobInfoType.RESTARTABLE)
+        return bool(info.info.jobRestartable)
 
     def open_stage(self, name: str) -> Stage:
         """Return a :class:`Stage` wrapper for the given stage."""
@@ -246,81 +233,80 @@ class Stage:
             self._job_handle, self._name, info_type
         )
 
-    name = _info_property(
-        StageInfoType.NAME,
-        "stageName",
-        decode_bytes,
-    )
-    type_name = _info_property(
-        StageInfoType.TYPE,
-        "typeName",
-        decode_bytes,
-    )
-    links = _info_property(
-        StageInfoType.LINK_LIST,
-        "linkList",
-        split_char_p,
-    )
-    link_types = _info_property(
-        StageInfoType.LINK_TYPES,
-        "linkTypes",
-        split_char_p,
-    )
-    variables = _info_property(
-        StageInfoType.VAR_LIST,
-        "varList",
-        split_char_p,
-    )
-    row_count = _info_property(
-        StageInfoType.IN_ROW_NUM,
-        "inRowNum",
-        int,
-    )
-    start_time = _info_property(
-        StageInfoType.START_TIMESTAMP,
-        "stageStartTime",
-        timestamp_to_datetime,
-    )
-    end_time = _info_property(
-        StageInfoType.END_TIMESTAMP,
-        "stageEndTime",
-        timestamp_to_datetime,
-    )
-    description = _info_property(
-        StageInfoType.DESC,
-        "stageDesc",
-        decode_bytes,
-    )
-    instances = _info_property(
-        StageInfoType.INST,
-        "instList",
-        split_char_p,
-    )
-    cpu = _info_property(
-        StageInfoType.CPU,
-        "cpuList",
-        split_char_p,
-    )
-    elapsed = _info_property(
-        StageInfoType.ELAPSED,
-        "stageElapsed",
-        decode_bytes,
-    )
-    pids = _info_property(
-        StageInfoType.PID,
-        "pidList",
-        split_char_p,
-    )
-    status = _info_property(
-        StageInfoType.STATUS,
-        "stageStatus",
-        int,
-    )
-    custom_info = _info_property(
-        StageInfoType.CUST_INFO_LIST,
-        "custInfoList",
-        split_char_p,
-    )
+    @cached_property
+    def name(self) -> str:
+        info = self._get_info(StageInfoType.NAME)
+        return decode_bytes(info.info.stageName)
+
+    @property
+    def type_name(self) -> str:
+        info = self._get_info(StageInfoType.TYPE)
+        return decode_bytes(info.info.typeName)
+
+    @property
+    def links(self) -> list[str]:
+        info = self._get_info(StageInfoType.LINK_LIST)
+        return split_char_p(info.info.linkList)
+
+    @property
+    def link_types(self) -> list[str]:
+        info = self._get_info(StageInfoType.LINK_TYPES)
+        return split_char_p(info.info.linkTypes)
+
+    @property
+    def variables(self) -> list[str]:
+        info = self._get_info(StageInfoType.VAR_LIST)
+        return split_char_p(info.info.varList)
+
+    @property
+    def row_count(self) -> int:
+        info = self._get_info(StageInfoType.IN_ROW_NUM)
+        return int(info.info.inRowNum)
+
+    @property
+    def start_time(self) -> datetime:
+        info = self._get_info(StageInfoType.START_TIMESTAMP)
+        return timestamp_to_datetime(info.info.stageStartTime)
+
+    @property
+    def end_time(self) -> datetime:
+        info = self._get_info(StageInfoType.END_TIMESTAMP)
+        return timestamp_to_datetime(info.info.stageEndTime)
+
+    @property
+    def description(self) -> str:
+        info = self._get_info(StageInfoType.DESC)
+        return decode_bytes(info.info.stageDesc)
+
+    @property
+    def instances(self) -> list[str]:
+        info = self._get_info(StageInfoType.INST)
+        return split_char_p(info.info.instList)
+
+    @property
+    def cpu(self) -> list[str]:
+        info = self._get_info(StageInfoType.CPU)
+        return split_char_p(info.info.cpuList)
+
+    @property
+    def elapsed(self) -> str:
+        info = self._get_info(StageInfoType.ELAPSED)
+        return decode_bytes(info.info.stageElapsed)
+
+    @property
+    def pids(self) -> list[str]:
+        info = self._get_info(StageInfoType.PID)
+        return split_char_p(info.info.pidList)
+
+    @property
+    def status(self) -> int:
+        info = self._get_info(StageInfoType.STATUS)
+        return int(info.info.stageStatus)
+
+    @property
+    def custom_info(self) -> list[str]:
+        info = self._get_info(StageInfoType.CUST_INFO_LIST)
+        return split_char_p(info.info.custInfoList)
 
     def open_link(self, name: str) -> Link:
         """Return a :class:`Link` wrapper for the given link."""
@@ -344,33 +330,32 @@ class Link:
             self._job_handle, self._stage_name, self._name, info_type
         )
 
-    name = _info_property(
-        LinkInfoType.NAME,
-        "linkName",
-        decode_bytes,
-    )
-    row_count = _info_property(
-        LinkInfoType.ROW_COUNT,
-        "rowCount",
-        int,
-    )
-    sql_state = _info_property(
-        LinkInfoType.SQL_STATE,
-        "linkSQLState",
-        decode_bytes,
-    )
-    dbms_code = _info_property(
-        LinkInfoType.DBMS_CODE,
-        "linkDBMSCode",
-        decode_bytes,
-    )
-    description = _info_property(
-        LinkInfoType.DESC,
-        "linkDesc",
-        decode_bytes,
-    )
-    stage = _info_property(
-        LinkInfoType.STAGE,
-        "linkedStage",
-        decode_bytes,
-    )
+    @cached_property
+    def name(self) -> str:
+        info = self._get_info(LinkInfoType.NAME)
+        return decode_bytes(info.info.linkName)
+
+    @property
+    def row_count(self) -> int:
+        info = self._get_info(LinkInfoType.ROW_COUNT)
+        return int(info.info.rowCount)
+
+    @property
+    def sql_state(self) -> str:
+        info = self._get_info(LinkInfoType.SQL_STATE)
+        return decode_bytes(info.info.linkSQLState)
+
+    @property
+    def dbms_code(self) -> str:
+        info = self._get_info(LinkInfoType.DBMS_CODE)
+        return decode_bytes(info.info.linkDBMSCode)
+
+    @property
+    def description(self) -> str:
+        info = self._get_info(LinkInfoType.DESC)
+        return decode_bytes(info.info.linkDesc)
+
+    @property
+    def stage(self) -> str:
+        info = self._get_info(LinkInfoType.STAGE)
+        return decode_bytes(info.info.linkedStage)
