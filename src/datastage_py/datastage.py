@@ -52,10 +52,14 @@ from datastage_py.utils import (
 )
 
 if TYPE_CHECKING:
+    from ctypes import _Pointer
     from pathlib import Path
 
-ProjectHandle = POINTER(DSPROJECT)
-JobHandle = POINTER(DSJOB)
+    ProjectHandle = _Pointer[DSPROJECT]
+    JobHandle = _Pointer[DSJOB]
+else:
+    ProjectHandle = POINTER(DSPROJECT)
+    JobHandle = POINTER(DSJOB)
 
 
 class DSAPI:
