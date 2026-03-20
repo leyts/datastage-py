@@ -6,20 +6,22 @@ def decode_bytes(value: bytes) -> str:
     return value.decode("cp1251", errors="ignore")
 
 
+_NULL = b"\x00"
+
+
 def convert_char_p_to_list(char_p) -> list[str]:
-    words_list = []
-
     if not char_p:
-        return words_list
+        return []
 
-    start_word_pos = 0
-    it = 0
+    items: list[str] = []
+    start = 0
+    i = 0
     while True:
-        if char_p[it] == b"\x00":
-            if it - 1 >= 0 and char_p[it - 1] == b"\x00":
+        if char_p[i] == _NULL:
+            if i == start:
                 break
-            words_list.append(decode_bytes(char_p[start_word_pos:it]))
-            start_word_pos = it + 1
-        it = it + 1
+            items.append(decode_bytes(char_p[start:i]))
+            start = i + 1
+        i += 1
 
-    return words_list
+    return items
