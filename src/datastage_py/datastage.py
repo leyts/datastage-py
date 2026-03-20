@@ -7,8 +7,7 @@ from ctypes import (
     c_void_p,
     pointer,
 )
-from pathlib import Path
-from typing import Literal, NoReturn
+from typing import TYPE_CHECKING, Literal, NoReturn
 
 from datastage_py.enums import (
     CustInfoType,
@@ -51,6 +50,9 @@ from datastage_py.utils import (
     decode_bytes,
     encode_string,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 ProjectHandle = POINTER(DSPROJECT)
 JobHandle = POINTER(DSJOB)
