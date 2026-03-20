@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from functools import cached_property
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from datastage_py.enums import (
@@ -57,31 +58,37 @@ class Project:
 
     @cached_property
     def name(self) -> str:
+        """Project name."""
         info = self._get_info(ProjectInfoType.NAME)
         return decode_bytes(info.info.projectName)
 
     @cached_property
-    def path(self) -> str:
+    def path(self) -> Path:
+        """Project directory path."""
         info = self._get_info(ProjectInfoType.PATH)
-        return decode_bytes(info.info.projectPath)
+        return Path(decode_bytes(info.info.projectPath))
 
     @cached_property
-    def host_name(self) -> str:
+    def hostname(self) -> str:
+        """Engine hostname."""
         info = self._get_info(ProjectInfoType.HOST_NAME)
         return decode_bytes(info.info.hostName)
 
     @cached_property
     def install_tag(self) -> str:
+        """Engine installation tag."""
         info = self._get_info(ProjectInfoType.INSTALL_TAG)
         return decode_bytes(info.info.installTag)
 
     @cached_property
-    def tcp_port(self) -> str:
+    def tcp_port(self) -> int:
+        """Engine TCP port."""
         info = self._get_info(ProjectInfoType.TCP_PORT)
-        return decode_bytes(info.info.tcpPort)
+        return int(info.info.tcpPort)
 
     @property
     def jobs(self) -> list[str]:
+        """Job names in the project."""
         info = self._get_info(ProjectInfoType.JOB_LIST)
         return split_char_p(info.info.jobList)
 
