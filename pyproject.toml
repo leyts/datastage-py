@@ -61,9 +61,3 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[[tool.ty.overrides]]
-include = ["src/datastage_py/datastage.py"]
-
-[tool.ty.overrides.rules]
-invalid-type-form = "ignore"
