@@ -1,3 +1,5 @@
+"""Python ctypes wrapper around the IBM DataStage API."""
+
 from ctypes import (
     CDLL,
     POINTER,
@@ -66,6 +68,7 @@ class DSAPI:
     DSAPI_VERSION = 1
 
     def __init__(self) -> None:
+        """Initialise the ``DSAPI`` instance."""
         self.__api: CDLL | None = None
         self.__project_name = None
 

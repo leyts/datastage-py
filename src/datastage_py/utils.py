@@ -1,3 +1,5 @@
+"""Encoding helpers and C string utilities for the IBM DataStage API."""
+
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:

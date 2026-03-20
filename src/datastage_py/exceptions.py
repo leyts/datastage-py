@@ -17,6 +17,7 @@ class DSAPIError(Exception):
         *,
         code: int | None = None,
     ) -> None:
+        """Initialise the error with the failing function name and message."""
         self.func = func
         self.msg = msg or self.default_msg
         if code is not None:
