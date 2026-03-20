@@ -479,7 +479,7 @@ class DSNoMoreError(DSAPIError):
 class DSBadProjectError(DSAPIError):
     token = "DSJE_BADPROJECT"
     code = -1002
-    default_msg = "ProjectName is not a known project."
+    default_msg = "ProjectName is not a known project"
 
 
 class DSNoDataStageError(DSAPIError):
