@@ -4,21 +4,21 @@ from enum import IntEnum, IntFlag, StrEnum
 
 
 class CustInfoType(IntEnum):
-    """Maps ``infoType`` values from ``DSCUSTINFO``."""
+    """Maps `infoType` values from `DSCUSTINFO`."""
 
     VALUE = 1
     DESC = 2
 
 
 class EnvVarType(StrEnum):
-    """Maps ``varType`` values from ``DSAddEnvVar``."""
+    """Maps `varType` values from `DSAddEnvVar`."""
 
     STRING = "String"
     ENCRYPTED = "Encrypted"
 
 
 class JobInfoType(IntEnum):
-    """Maps ``infoType`` values from ``DSJOBINFO``."""
+    """Maps `infoType` values from `DSJOBINFO`."""
 
     STATUS = 1
     NAME = 2
@@ -46,7 +46,7 @@ class JobInfoType(IntEnum):
 
 
 class JobStatus(IntEnum):
-    """Maps ``jobStatus`` values from ``DSJOBINFO``."""
+    """Maps `jobStatus` values from `DSJOBINFO`."""
 
     RUNNING = 0
     RUN_OK = 1
@@ -64,14 +64,14 @@ class JobStatus(IntEnum):
 
 
 class LimitType(IntEnum):
-    """Maps ``limitType`` values from ``DSSetJobLimit``."""
+    """Maps `limitType` values from `DSSetJobLimit`."""
 
     WARN = 1
     ROWS = 2
 
 
 class LinkInfoType(IntEnum):
-    """Maps ``infoType`` values from ``DSLINKINFO``."""
+    """Maps `infoType` values from `DSLINKINFO`."""
 
     LAST_ERROR = 1
     NAME = 2
@@ -86,7 +86,7 @@ class LinkInfoType(IntEnum):
 
 
 class LogEventType(IntEnum):
-    """Maps ``eventType`` values from ``DSLOGDETAILFULL``."""
+    """Maps `eventType` values from `DSLOGDETAILFULL`."""
 
     INFO = 1
     WARNING = 2
@@ -100,7 +100,7 @@ class LogEventType(IntEnum):
 
 
 class ParamType(IntEnum):
-    """Maps ``paramType`` values from ``DSPARAM``."""
+    """Maps `paramType` values from `DSPARAM`."""
 
     STRING = 0
     ENCRYPTED = 1
@@ -113,7 +113,7 @@ class ParamType(IntEnum):
 
 
 class ProjectInfoType(IntEnum):
-    """Maps ``infoType`` values from ``DSPROJECTINFO``."""
+    """Maps `infoType` values from `DSPROJECTINFO`."""
 
     JOB_LIST = 1
     NAME = 2
@@ -124,7 +124,7 @@ class ProjectInfoType(IntEnum):
 
 
 class ProjectProperty(StrEnum):
-    """Maps ``property`` values from ``DSSetProjectProperty``."""
+    """Maps `property` values from `DSSetProjectProperty`."""
 
     OSH_VISIBLE_FLAG = "OSHVisibleFlag"
     JOB_ADMIN_ENABLED = "JobAdminEnabled"
@@ -138,7 +138,7 @@ class ProjectProperty(StrEnum):
 
 
 class ReportType(IntEnum):
-    """Maps ``reportType`` values from ``DSREPORTINFO``."""
+    """Maps `reportType` values from `DSREPORTINFO`."""
 
     BASIC = 0
     DETAIL = 1
@@ -146,7 +146,7 @@ class ReportType(IntEnum):
 
 
 class ReposJobFilter(IntFlag):
-    """Maps ``infoType`` values from ``DSREPOSINFO``."""
+    """Maps `infoType` values from `DSREPOSINFO`."""
 
     SERVER = 1
     PARALLEL = 2
@@ -156,13 +156,13 @@ class ReposJobFilter(IntFlag):
 
 
 class ReposObjectType(IntEnum):
-    """Maps ``infoType`` values from ``DSREPOSINFO``."""
+    """Maps `infoType` values from `DSREPOSINFO`."""
 
     JOBS = 1
 
 
 class ReposRelationshipType(IntEnum):
-    """Maps ``relationshipType`` values from ``DSREPOSUSAGEJOB``."""
+    """Maps `relationshipType` values from `DSREPOSUSAGEJOB`."""
 
     JOB_USES_JOB = 1
     JOB_USED_BY_JOB = 2
@@ -172,7 +172,7 @@ class ReposRelationshipType(IntEnum):
 
 
 class RunMode(IntEnum):
-    """Maps ``runMode`` values from ``DSRUNJOB``."""
+    """Maps `runMode` values from `DSRUNJOB`."""
 
     NORMAL = 1
     RESET = 2
@@ -181,7 +181,7 @@ class RunMode(IntEnum):
 
 
 class StageInfoType(IntEnum):
-    """Maps ``infoType`` values from ``DSSTAGEINFO``."""
+    """Maps `infoType` values from `DSSTAGEINFO`."""
 
     LINK_LIST = 1
     LAST_ERROR = 2
@@ -204,7 +204,7 @@ class StageInfoType(IntEnum):
 
 
 class VarInfoType(IntEnum):
-    """Maps ``infoType`` values from ``DSVARINFO``."""
+    """Maps `infoType` values from `DSVARINFO`."""
 
     VALUE = 1
     DESC = 2

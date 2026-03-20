@@ -68,7 +68,7 @@ class DSAPI:
     DSAPI_VERSION = 1
 
     def __init__(self) -> None:
-        """Initialise the ``DSAPI`` instance."""
+        """Initialise the `DSAPI` instance."""
         self.__api: CDLL | None = None
         self.__project_name = None
 
@@ -933,16 +933,16 @@ class DSAPI:
         """Load the DataStage API shared library.
 
         Args:
-            file: Path to ``vmdsapi.dll`` (Windows)
-                or ``libvmdsapi.so`` (UNIX).
+            file: Path to `vmdsapi.dll` (Windows)
+                or `libvmdsapi.so` (UNIX).
 
         The relevant search-path variable must include the
         directory containing the library:
 
-        - **Windows** — add the directory to ``PATH``,
-            typically ``../IBM/InformationServer/Clients/Classic/``
-        - **UNIX** — add the directory to ``LD_LIBRARY_PATH``,
-            typically ``../IBM/InformationServer/Server/DSEngine/lib/``
+        - **Windows** — add the directory to `PATH`,
+            typically `../IBM/InformationServer/Clients/Classic/`
+        - **UNIX** — add the directory to `LD_LIBRARY_PATH`,
+            typically `../IBM/InformationServer/Server/DSEngine/lib/`
         """
         if not file.is_file():
             msg = f"Library not found: {file!r}"

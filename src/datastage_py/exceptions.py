@@ -577,7 +577,7 @@ _CODE_TO_ERROR: dict[int, type[DSAPIError]] = {
 
 
 def raise_for_error(func: str, error_code: int, msg: str = "") -> NoReturn:
-    """Raise the appropriate ``DSAPIError`` subclass for an error code."""
+    """Raise the appropriate `DSAPIError` subclass for an error code."""
     exc_class = _CODE_TO_ERROR.get(error_code)
     if exc_class is not None:
         raise exc_class(func, msg)

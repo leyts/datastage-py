@@ -22,7 +22,7 @@ def decode_bytes(value: bytes) -> str:
 def split_char_p(char_p: _Pointer[c_char] | None) -> list[str]:
     """Convert a double-null-terminated C char pointer to a list of strings.
 
-    The C API returns certain results (e.g. ``DSJ_PARAMLIST``) as a pointer
+    The C API returns certain results (e.g. `DSJ_PARAMLIST`) as a pointer
     to a buffer containing a series of null-terminated strings ending with
     a second null character::
 
