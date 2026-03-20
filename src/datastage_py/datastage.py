@@ -25,7 +25,7 @@ from datastage_py.enums import (
     StageInfoType,
     VarInfoType,
 )
-from datastage_py.exceptions import raise_for_error
+from datastage_py.exceptions import DSNoMoreError, raise_for_error
 from datastage_py.structures import (
     DSCUSTINFO,
     DSJOB,
@@ -344,7 +344,7 @@ class DSAPI:
             self._raise_last_error("DSFindFirstLogEntry")
         return log_info
 
-    def DSFindNextLogEntry(self, job_name: JobHandle) -> DSLOGEVENT:
+    def DSFindNextLogEntry(self, job_name: JobHandle) -> DSLOGEVENT | None:
         self._api.DSFindNextLogEntry.argtypes = [
             POINTER(DSJOB),
             POINTER(DSLOGEVENT),
@@ -355,6 +355,8 @@ class DSAPI:
         res = self._api.DSFindNextLogEntry(job_name, pointer(log_event))
 
         if res != 0:
+            if res == DSNoMoreError.code:
+                return None
             self._raise_last_error("DSFindNextLogEntry")
         return log_event
 
