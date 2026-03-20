@@ -10,11 +10,6 @@ from ctypes import (
 from pathlib import Path
 from typing import Literal, NoReturn
 
-from datastage_py._utils import (
-    convert_char_p_to_list,
-    decode_bytes,
-    encode_string,
-)
 from datastage_py.enums import (
     CustInfoType,
     EnvVarType,
@@ -50,6 +45,11 @@ from datastage_py.structures import (
     DSSTAGEINFO,
     DSVARINFO,
     time_t,
+)
+from datastage_py.utils import (
+    convert_char_p_to_list,
+    decode_bytes,
+    encode_string,
 )
 
 ProjectHandle = POINTER(DSPROJECT)

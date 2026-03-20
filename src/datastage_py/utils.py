@@ -6,7 +6,7 @@ def decode_bytes(value: bytes) -> str:
     return value.decode("cp1251", errors="ignore")
 
 
-def convert_char_p_to_list(char_p):
+def convert_char_p_to_list(char_p) -> list:
     words_list = []
 
     if not char_p:
