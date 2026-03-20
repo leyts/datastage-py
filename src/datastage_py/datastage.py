@@ -305,7 +305,7 @@ class DSAPI:
         start_time: int = 0,
         end_time: int = 0,
         max_number: int = 500,
-    ) -> DSLOGEVENT:
+    ) -> DSLOGEVENT | None:
         """Retrieve all the log entries that meet a specified criteria.
 
         Args:
@@ -341,6 +341,8 @@ class DSAPI:
         )
 
         if res != 0:
+            if res == DSNoMoreError.code:
+                return None
             self._raise_last_error("DSFindFirstLogEntry")
         return log_info
 
