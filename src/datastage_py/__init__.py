@@ -20,14 +20,10 @@ from datastage_py.enums import (
     StageInfoType,
     VarInfoType,
 )
-from datastage_py.exceptions import DSAPIError
-from datastage_py.structures import DSPARAM
 
 __all__ = [
     "DSAPI",
-    "DSPARAM",
     "CustInfoType",
-    "DSAPIError",
     "EnvVarType",
     "JobInfoType",
     "JobStatus",
