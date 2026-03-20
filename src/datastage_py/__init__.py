@@ -20,17 +20,21 @@ from datastage_py.enums import (
     StageInfoType,
     VarInfoType,
 )
+from datastage_py.models import Job, Link, Project, Stage
 
 __all__ = [
     "DSAPI",
     "CustInfoType",
     "EnvVarType",
+    "Job",
     "JobInfoType",
     "JobStatus",
     "LimitType",
+    "Link",
     "LinkInfoType",
     "LogEventType",
     "ParamType",
+    "Project",
     "ProjectInfoType",
     "ProjectProperty",
     "ReportType",
@@ -38,6 +42,7 @@ __all__ = [
     "ReposObjectType",
     "ReposRelationshipType",
     "RunMode",
+    "Stage",
     "StageInfoType",
     "VarInfoType",
 ]

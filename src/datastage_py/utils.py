@@ -1,5 +1,6 @@
 """Encoding helpers and C string utilities for the IBM DataStage API."""
 
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
@@ -44,3 +45,8 @@ def split_char_p(char_p: _Pointer[c_char] | None) -> list[str]:
         i += 1
 
     return items
+
+
+def timestamp_to_datetime(value: int) -> datetime:
+    """Convert a Unix timestamp to a timezone-aware UTC datetime."""
+    return datetime.fromtimestamp(value, tz=UTC)
