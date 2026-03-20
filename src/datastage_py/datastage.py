@@ -109,14 +109,14 @@ class DSAPI:
         self._api.DSOpenProjectEx.argtypes = [c_int, c_char_p]
         self._api.DSOpenProjectEx.restype = POINTER(DSPROJECT)
 
-        project_name = self._api.DSOpenProjectEx(
+        handle = self._api.DSOpenProjectEx(
             self.DSAPI_VERSION, encode_string(project_name)
         )
 
-        if not project_name:
+        if not handle:
             self._raise_last_error("DSOpenProject")
-        self.__project_name = project_name
-        return project_name
+        self.__project_name = handle
+        return handle
 
     def DSGetProjectInfo(
         self, project_name: ProjectHandle, info_type: ProjectInfoType
@@ -162,14 +162,14 @@ class DSAPI:
         ]
         self._api.DSOpenJob.restype = POINTER(DSJOB)
 
-        job_name = self._api.DSOpenJob(
+        handle = self._api.DSOpenJob(
             project_name, c_char_p(encode_string(job_name))
         )
 
-        if not job_name:
+        if not handle:
             self._raise_last_error("DSOpenJob")
-        self.__job_name = job_name
-        return job_name
+        self.__job_name = handle
+        return handle
 
     def DSGetJobInfo(
         self, job_name: JobHandle, info_type: JobInfoType
