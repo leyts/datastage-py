@@ -6,7 +6,7 @@ def decode_bytes(value: bytes) -> str:
     return value.decode("cp1251", errors="ignore")
 
 
-def convert_char_p_to_list(char_p) -> list:
+def convert_char_p_to_list(char_p) -> list[str]:
     words_list = []
 
     if not char_p:
@@ -18,7 +18,7 @@ def convert_char_p_to_list(char_p) -> list:
         if char_p[it] == b"\x00":
             if it - 1 >= 0 and char_p[it - 1] == b"\x00":
                 break
-            words_list.append(char_p[start_word_pos:it])
+            words_list.append(decode_bytes(char_p[start_word_pos:it]))
             start_word_pos = it + 1
         it = it + 1
 
