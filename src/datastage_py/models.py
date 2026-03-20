@@ -1,5 +1,6 @@
 """High-level wrapper classes for the IBM DataStage API."""
 
+from datetime import timedelta
 from functools import cached_property
 from typing import TYPE_CHECKING
 
@@ -114,55 +115,59 @@ class Job:
     def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
         return self._api.DSGetJobInfo(self._handle, info_type)
 
-    @property
-    def status(self) -> JobStatus:
-        info = self._get_info(JobInfoType.STATUS)
-        return JobStatus(info.info.jobStatus)
-
     @cached_property
     def name(self) -> str:
+        """Job name."""
         info = self._get_info(JobInfoType.NAME)
         return decode_bytes(info.info.jobName)
 
     @property
-    def controller(self) -> str:
-        info = self._get_info(JobInfoType.CONTROLLER)
-        return decode_bytes(info.info.jobController)
+    def invocation_id(self) -> str:
+        """Job invocation name."""
+        info = self._get_info(JobInfoType.INVOCATION_ID)
+        return decode_bytes(info.info.jobInvocationId)
 
     @property
-    def start_time(self) -> datetime:
-        info = self._get_info(JobInfoType.START_TIMESTAMP)
-        return timestamp_to_datetime(info.info.jobStartTime)
+    def status(self) -> JobStatus:
+        """Current job status."""
+        info = self._get_info(JobInfoType.STATUS)
+        return JobStatus(info.info.jobStatus)
 
     @property
-    def last_time(self) -> datetime:
-        info = self._get_info(JobInfoType.LAST_TIMESTAMP)
-        return timestamp_to_datetime(info.info.jobLastTime)
-
-    @property
-    def wave_number(self) -> int:
-        info = self._get_info(JobInfoType.WAVE_NO)
-        return int(info.info.jobWaveNumber)
-
-    @property
-    def params(self) -> list[str]:
-        info = self._get_info(JobInfoType.PARAM_LIST)
-        return split_char_p(info.info.paramList)
-
-    @property
-    def stages(self) -> list[str]:
-        info = self._get_info(JobInfoType.STAGE_LIST)
-        return split_char_p(info.info.stageList)
+    def interim_status(self) -> JobStatus:
+        """Status after all stages have run, before the after-job subroutine."""  # noqa: E501
+        info = self._get_info(JobInfoType.INTERIM_STATUS)
+        return JobStatus(info.info.jobInterimStatus)
 
     @property
     def user_status(self) -> str:
+        """Job user status, if any."""
         info = self._get_info(JobInfoType.USER_STATUS)
         return decode_bytes(info.info.userStatus)
 
     @property
-    def control(self) -> int:
-        info = self._get_info(JobInfoType.CONTROL)
-        return int(info.info.jobControl)
+    def start_time(self) -> datetime:
+        """Job start timestamp."""
+        info = self._get_info(JobInfoType.START_TIMESTAMP)
+        return timestamp_to_datetime(info.info.jobStartTime)
+
+    @property
+    def finish_time(self) -> datetime:
+        """Job finish timestamp."""
+        info = self._get_info(JobInfoType.LAST_TIMESTAMP)
+        return timestamp_to_datetime(info.info.jobLastTime)
+
+    @property
+    def elapsed_time(self) -> timedelta:
+        """Job elapsed time."""
+        info = self._get_info(JobInfoType.ELAPSED)
+        return timedelta(seconds=info.info.jobElapsed)
+
+    @property
+    def controller(self) -> str:
+        """Controlling job name."""
+        info = self._get_info(JobInfoType.CONTROLLER)
+        return decode_bytes(info.info.jobController)
 
     @property
     def pid(self) -> int:
@@ -170,47 +175,62 @@ class Job:
         return int(info.info.jobPid)
 
     @property
-    def invocations(self) -> list[str]:
-        info = self._get_info(JobInfoType.INVOCATIONS)
-        return split_char_p(info.info.jobInvocations)
+    def wave_number(self) -> int:
+        """Wave number of the last or current run."""
+        info = self._get_info(JobInfoType.WAVE_NO)
+        return int(info.info.jobWaveNumber)
 
     @property
-    def interim_status(self) -> JobStatus:
-        info = self._get_info(JobInfoType.INTERIM_STATUS)
-        return JobStatus(info.info.jobInterimStatus)
-
-    @property
-    def invocation_id(self) -> str:
-        info = self._get_info(JobInfoType.INVOCATION_ID)
-        return decode_bytes(info.info.jobInvocationId)
-
-    @property
-    def description(self) -> str:
+    def short_description(self) -> str:
+        """Description from the `Job Properties` dialogue."""
         info = self._get_info(JobInfoType.DESC)
         return decode_bytes(info.info.jobDesc)
 
     @property
     def full_description(self) -> str:
+        """Full description from the `Job Properties` dialogue."""
         info = self._get_info(JobInfoType.FULL_DESC)
         return decode_bytes(info.info.jobFullDesc)
 
     @property
-    def elapsed(self) -> int:
-        info = self._get_info(JobInfoType.ELAPSED)
-        return int(info.info.jobElapsed)
+    def parameters(self) -> list[str]:
+        """Job parameter names."""
+        info = self._get_info(JobInfoType.PARAM_LIST)
+        return split_char_p(info.info.paramList)
 
     @property
-    def dmi_service(self) -> int:
+    def stages(self) -> list[str]:
+        """Active job stages."""
+        info = self._get_info(JobInfoType.STAGE_LIST)
+        return split_char_p(info.info.stageList)
+
+    @property
+    def invocation_ids(self) -> list[str]:
+        """Job invocation names."""
+        info = self._get_info(JobInfoType.INVOCATIONS)
+        return split_char_p(info.info.jobInvocations)
+
+    @property
+    def is_stop_requested(self) -> int:
+        """Whether a stop request has been issued for the job."""
+        info = self._get_info(JobInfoType.CONTROL)
+        return int(info.info.jobControl)
+
+    @property
+    def is_web_service(self) -> bool:
+        """Whether this is a web (DMI) service job."""
         info = self._get_info(JobInfoType.DMI_SERVICE)
-        return int(info.info.jobDMIService)
+        return bool(info.info.jobDMIService)
 
     @property
-    def multi_invokable(self) -> bool:
+    def is_multi_invokable(self) -> bool:
+        """Whether this job supports multiple invocations."""
         info = self._get_info(JobInfoType.MULTI_INVOKABLE)
         return bool(info.info.jobMultiInvokable)
 
     @property
-    def restartable(self) -> bool:
+    def is_restartable(self) -> bool:
+        """Whether this job can be restarted."""
         info = self._get_info(JobInfoType.RESTARTABLE)
         return bool(info.info.jobRestartable)
 
