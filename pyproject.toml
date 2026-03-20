@@ -1,0 +1,64 @@
+[project]
+name = "datastage-py"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.7",
+    "ty>=0.0.24",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 20
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "Q004",
+    "COM812",
+    "COM819",
+    "N802",
+    "TD002",
+    "TD003",
+    "D1", # temp
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/datastage_py/exceptions.py" = [
+    "E501",
+    "S105",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[[tool.ty.overrides]]
+include = ["src/datastage_py/datastage.py"]
+
+[tool.ty.overrides.rules]
+invalid-type-form = "ignore"
