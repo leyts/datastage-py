@@ -575,8 +575,14 @@ class DSAPI:
         self,
         job_name: JobHandle,
         report_type: ReportType,
-        line_separator: Literal["CRLF", "LF", "CR"] = "CRLF",
+        line_separator: Literal["CRLF", "LF", "CR"],
     ):
+        """Generate a job report.
+
+        Args:
+            line_separator: Line separator in the report. The C API
+                defaults to CRLF on Windows and LF on other platforms.
+        """
         self._api.DSMakeJobReport.argtypes = [
             POINTER(DSJOB),
             c_int,
