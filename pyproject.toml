@@ -1,7 +1,7 @@
 [project]
 name = "datastage-py"
 version = "0.1.0"
-description = "Add your description here"
+description = "Python wrapper for IBM DataStage API."
 readme = "README.md"
 authors = [
     { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" }
