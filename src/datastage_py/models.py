@@ -263,73 +263,88 @@ class Stage:
 
     @cached_property
     def name(self) -> str:
+        """Stage name."""
         info = self._get_info(StageInfoType.NAME)
         return decode_bytes(info.info.stageName)
 
     @property
-    def type_name(self) -> str:
+    def stage_type(self) -> str:
+        """Stage type (e.g. Transformer, BeforeJob)."""
         info = self._get_info(StageInfoType.TYPE)
         return decode_bytes(info.info.typeName)
 
     @property
+    def description(self) -> str:
+        """Stage description."""
+        info = self._get_info(StageInfoType.DESC)
+        return decode_bytes(info.info.stageDesc)
+
+    @property
+    def status(self) -> int:
+        """Stage status."""
+        info = self._get_info(StageInfoType.STATUS)
+        return int(info.info.stageStatus)
+
+    @property
+    def start_time(self) -> datetime:
+        """Stage start timestamp."""
+        info = self._get_info(StageInfoType.START_TIMESTAMP)
+        return timestamp_to_datetime(info.info.stageStartTime)
+
+    @property
+    def finish_time(self) -> datetime:
+        """Stage finish timestamp."""
+        info = self._get_info(StageInfoType.END_TIMESTAMP)
+        return timestamp_to_datetime(info.info.stageEndTime)
+
+    @property
+    def elapsed_time(self) -> timedelta:
+        """Stage elapsed time."""
+        info = self._get_info(StageInfoType.ELAPSED)
+        return timedelta(seconds=info.info.stageElapsed)
+
+    @property
+    def row_count(self) -> int:
+        """Primary link input row count."""
+        info = self._get_info(StageInfoType.IN_ROW_NUM)
+        return int(info.info.inRowNum)
+
+    @property
+    def instances(self) -> list[str]:
+        """Instance names (parallel jobs)."""
+        info = self._get_info(StageInfoType.INST)
+        return split_char_p(info.info.instList)
+
+    @property
+    def process_ids(self) -> list[int]:
+        """Process IDs (parallel jobs)."""
+        info = self._get_info(StageInfoType.PID)
+        return [int(s) for s in split_char_p(info.info.pidList)]
+
+    @property
+    def cpu_times(self) -> list[timedelta]:
+        info = self._get_info(StageInfoType.CPU)
+        return [
+            timedelta(seconds=int(s)) for s in split_char_p(info.info.cpuList)
+        ]
+
+    @property
     def links(self) -> list[str]:
+        """Link names."""
         info = self._get_info(StageInfoType.LINK_LIST)
         return split_char_p(info.info.linkList)
 
     @property
     def link_types(self) -> list[str]:
+        """Link types."""
         info = self._get_info(StageInfoType.LINK_TYPES)
         return split_char_p(info.info.linkTypes)
 
     @property
     def variables(self) -> list[str]:
+        """Stage variable names."""
         info = self._get_info(StageInfoType.VAR_LIST)
         return split_char_p(info.info.varList)
-
-    @property
-    def row_count(self) -> int:
-        info = self._get_info(StageInfoType.IN_ROW_NUM)
-        return int(info.info.inRowNum)
-
-    @property
-    def start_time(self) -> datetime:
-        info = self._get_info(StageInfoType.START_TIMESTAMP)
-        return timestamp_to_datetime(info.info.stageStartTime)
-
-    @property
-    def end_time(self) -> datetime:
-        info = self._get_info(StageInfoType.END_TIMESTAMP)
-        return timestamp_to_datetime(info.info.stageEndTime)
-
-    @property
-    def description(self) -> str:
-        info = self._get_info(StageInfoType.DESC)
-        return decode_bytes(info.info.stageDesc)
-
-    @property
-    def instances(self) -> list[str]:
-        info = self._get_info(StageInfoType.INST)
-        return split_char_p(info.info.instList)
-
-    @property
-    def cpu(self) -> list[str]:
-        info = self._get_info(StageInfoType.CPU)
-        return split_char_p(info.info.cpuList)
-
-    @property
-    def elapsed(self) -> str:
-        info = self._get_info(StageInfoType.ELAPSED)
-        return decode_bytes(info.info.stageElapsed)
-
-    @property
-    def pids(self) -> list[str]:
-        info = self._get_info(StageInfoType.PID)
-        return split_char_p(info.info.pidList)
-
-    @property
-    def status(self) -> int:
-        info = self._get_info(StageInfoType.STATUS)
-        return int(info.info.stageStatus)
 
     @property
     def custom_info(self) -> list[str]:
