@@ -136,7 +136,7 @@ class Job:
 
     @property
     def status(self) -> JobStatus:
-        """Current job status."""
+        """Job status."""
         info = self._get_info(JobInfoType.STATUS)
         return JobStatus(info.info.jobStatus)
 
@@ -172,6 +172,7 @@ class Job:
 
     @property
     def pid(self) -> int:
+        """Job process ID."""
         info = self._get_info(JobInfoType.PID)
         return int(info.info.jobPid)
 
@@ -188,14 +189,14 @@ class Job:
         return int(info.info.jobWaveNumber)
 
     @property
-    def short_description(self) -> str:
-        """Description from the `Job Properties` dialogue."""
+    def description(self) -> str:
+        """Job description from the `Job Properties` dialogue."""
         info = self._get_info(JobInfoType.DESC)
         return decode_bytes(info.info.jobDesc)
 
     @property
     def full_description(self) -> str:
-        """Full description from the `Job Properties` dialogue."""
+        """Job full description from the `Job Properties` dialogue."""
         info = self._get_info(JobInfoType.FULL_DESC)
         return decode_bytes(info.info.jobFullDesc)
 
