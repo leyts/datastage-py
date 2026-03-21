@@ -189,8 +189,8 @@ class Job:
         return int(info.info.jobWaveNumber)
 
     @property
-    def description(self) -> str:
-        """Job description from the `Job Properties` dialogue."""
+    def short_description(self) -> str:
+        """Job short description from the `Job Properties` dialogue."""
         info = self._get_info(JobInfoType.DESC)
         return decode_bytes(info.info.jobDesc)
 
@@ -231,8 +231,8 @@ class Job:
         return bool(info.info.jobDMIService)
 
     @property
-    def is_multi_invokable(self) -> bool:
-        """Whether this job supports multiple invocations."""
+    def is_multi_instance(self) -> bool:
+        """Whether this job supports multiple instances (invocations)."""
         info = self._get_info(JobInfoType.MULTI_INVOKABLE)
         return bool(info.info.jobMultiInvokable)
 
