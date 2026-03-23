@@ -409,7 +409,7 @@ class DSAPI:
 
         last_log_id = self._api.DSGetNewestLogId(job_name, event_type)
 
-        if last_log_id == -1:
+        if last_log_id == -1:  # TODO: Check this
             self._raise_last_error("DSGetNewestLogId")
         return last_log_id
 
