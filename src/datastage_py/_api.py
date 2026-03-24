@@ -14,7 +14,7 @@ from datastage_py._constants import (
 )
 from datastage_py.utils import (
     decode_bytes,
-    split_char_p,
+    parse_null_separated,
     timestamp_to_datetime,
 )
 
@@ -90,7 +90,7 @@ class Project:
     def jobs(self) -> list[str]:
         """Job names in the project."""
         info = self._get_info(ProjectInfoType.JOB_LIST)
-        return split_char_p(info.info.jobList)
+        return parse_null_separated(info.info.jobList)
 
     def open_job(self, name: str) -> Job:
         """Open a job by name and return a :class:`Job` wrapper."""
@@ -204,19 +204,19 @@ class Job:
     def parameters(self) -> list[str]:
         """Job parameter names."""
         info = self._get_info(JobInfoType.PARAM_LIST)
-        return split_char_p(info.info.paramList)
+        return parse_null_separated(info.info.paramList)
 
     @property
     def stages(self) -> list[str]:
         """Active job stages."""
         info = self._get_info(JobInfoType.STAGE_LIST)
-        return split_char_p(info.info.stageList)
+        return parse_null_separated(info.info.stageList)
 
     @property
     def invocation_ids(self) -> list[str]:
         """Job invocation names."""
         info = self._get_info(JobInfoType.INVOCATIONS)
-        return split_char_p(info.info.jobInvocations)
+        return parse_null_separated(info.info.jobInvocations)
 
     @property
     def is_stop_requested(self) -> int:
@@ -313,43 +313,44 @@ class Stage:
     def instances(self) -> list[str]:
         """Instance names (parallel jobs)."""
         info = self._get_info(StageInfoType.INST)
-        return split_char_p(info.info.instList)
+        return parse_null_separated(info.info.instList)
 
     @property
     def process_ids(self) -> list[int]:
         """Process IDs (parallel jobs)."""
         info = self._get_info(StageInfoType.PID)
-        return [int(s) for s in split_char_p(info.info.pidList)]
+        return [int(s) for s in parse_null_separated(info.info.pidList)]
 
     @property
     def cpu_times(self) -> list[timedelta]:
         info = self._get_info(StageInfoType.CPU)
         return [
-            timedelta(seconds=int(s)) for s in split_char_p(info.info.cpuList)
+            timedelta(seconds=int(s))
+            for s in parse_null_separated(info.info.cpuList)
         ]
 
     @property
     def links(self) -> list[str]:
         """Link names."""
         info = self._get_info(StageInfoType.LINK_LIST)
-        return split_char_p(info.info.linkList)
+        return parse_null_separated(info.info.linkList)
 
     @property
     def link_types(self) -> list[str]:
         """Link types."""
         info = self._get_info(StageInfoType.LINK_TYPES)
-        return split_char_p(info.info.linkTypes)
+        return parse_null_separated(info.info.linkTypes)
 
     @property
     def variables(self) -> list[str]:
         """Stage variable names."""
         info = self._get_info(StageInfoType.VAR_LIST)
-        return split_char_p(info.info.varList)
+        return parse_null_separated(info.info.varList)
 
     @property
     def custom_info(self) -> list[str]:
         info = self._get_info(StageInfoType.CUST_INFO_LIST)
-        return split_char_p(info.info.custInfoList)
+        return parse_null_separated(info.info.custInfoList)
 
     def open_link(self, name: str) -> Link:
         """Return a :class:`Link` wrapper for the given link."""

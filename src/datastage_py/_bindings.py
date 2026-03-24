@@ -50,7 +50,7 @@ from datastage_py.exceptions import DSNoMoreError, raise_for_error
 from datastage_py.utils import (
     decode_bytes,
     encode_string,
-    split_char_p,
+    parse_null_separated,
 )
 
 if TYPE_CHECKING:
@@ -109,7 +109,7 @@ class DSAPI:
 
         if not project_list:
             self._raise_last_error("DSGetProjectList")
-        return split_char_p(project_list)
+        return parse_null_separated(project_list)
 
     def DSOpenProject(self, project_name: str) -> ProjectHandle:
         self._api.DSOpenProjectEx.argtypes = [c_int, c_char_p]
@@ -434,13 +434,13 @@ class DSAPI:
 
         if res != 0:
             self._raise_last_error("DSGetLogEventIds")
-        return split_char_p(events_pointer)
+        return parse_null_separated(events_pointer)
 
     def DSGetQueueList(self) -> list[str]:
         self._api.DSGetQueueList.restype = POINTER(c_char)
         q_list = self._api.DSGetQueueList()
 
-        return split_char_p(q_list)
+        return parse_null_separated(q_list)
 
     def DSSetJobQueue(self, job_name: JobHandle, queue_name: str) -> None:
         self._api.DSSetJobQueue.argtypes = [POINTER(DSJOB), c_char_p]
@@ -755,7 +755,7 @@ class DSAPI:
 
         if not var_list:
             self._raise_last_error("DSListEnvVars")
-        return split_char_p(var_list)
+        return parse_null_separated(var_list)
 
     def DSAddProject(
         self, project_name: str, project_location: str = ""
@@ -886,7 +886,7 @@ class DSAPI:
 
         if not prop_list:
             self._raise_last_error("DSListProjectProperties")
-        return split_char_p(prop_list)
+        return parse_null_separated(prop_list)
 
     def DSGetWLMEnabled(self) -> None:
         self._api.DSGetWLMEnabled.argtypes = []

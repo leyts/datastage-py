@@ -1,25 +1,41 @@
-"""Helpers and utilities for the IBM DataStage API."""
+"""Helpers and utilities."""
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ctypes import _Pointer, c_char
 
-_NULL = b"\x00"
+_NULL_CHAR = b"\x00"
 
 
 def encode_string(value: str) -> bytes:
-    """Encode a Python string to UTF-8 bytes for passing to the C API."""
+    """Encode a Python string to UTF-8 bytes for passing to the C API.
+
+    Args:
+        value: The string to encode.
+        encoding: Target encoding.
+
+    Returns:
+        Encoded bytes.
+    """
     return value.encode("utf-8")
 
 
-def decode_bytes(value: bytes) -> str:
-    """Decode CP1251-encoded bytes from the C API into a Python string."""
-    return value.decode("cp1251")
+def decode_bytes(raw: bytes) -> str:
+    """Decode CP1251-encoded bytes from the C API into a Python string.
+
+    Args:
+        raw: Bytes to decode.
+        encoding: Source encoding.
+
+    Returns:
+        Decoded string.
+    """
+    return raw.decode("cp1251")
 
 
-def split_char_p(char_p: _Pointer[c_char] | None) -> list[str]:
+def parse_null_separated(raw: _Pointer[c_char] | None) -> list[str]:
     """Convert a double-null-terminated C char pointer to a list of strings.
 
     The C API returns certain results (e.g. `DSJ_PARAMLIST`) as a pointer
@@ -30,17 +46,19 @@ def split_char_p(char_p: _Pointer[c_char] | None) -> list[str]:
 
     This function splits that buffer into individually decoded strings.
     """
-    if not char_p:
+    if not raw:
         return []
 
     items: list[str] = []
     start = 0
     i = 0
+
     while True:
-        if char_p[i] == _NULL:
+        if raw[i] == _NULL_CHAR:
             if i == start:
                 break
-            items.append(decode_bytes(cast("bytes", char_p[start:i])))
+            segment = bytes(raw[start:i])
+            items.append(decode_bytes(segment))
             start = i + 1
         i += 1
 
