@@ -7,7 +7,7 @@ class CustInfoType(IntEnum):
     """Maps `infoType` values from `DSCUSTINFO`."""
 
     VALUE = 1
-    DESC = 2
+    DESCRIPTION = 2
 
 
 class EnvVarType(StrEnum):
@@ -24,8 +24,8 @@ class JobInfoType(IntEnum):
     NAME = 2
     CONTROLLER = 3
     START_TIMESTAMP = 4
-    WAVE_NO = 5
-    PARAM_LIST = 6
+    WAVE_NUMBER = 5
+    PARAMETER_LIST = 6
     STAGE_LIST = 7
     USER_STATUS = 8
     CONTROL = 9
@@ -34,14 +34,14 @@ class JobInfoType(IntEnum):
     INVOCATIONS = 12
     INTERIM_STATUS = 13
     INVOCATION_ID = 14
-    DESC = 15
+    DESCRIPTION = 15
     STAGE_LIST2 = 16
     ELAPSED = 17
     EOT_COUNT = 18
     EOT_TIMESTAMP = 19
     DMI_SERVICE = 20
     MULTI_INVOKABLE = 21
-    FULL_DESC = 22
+    FULL_DESCRIPTION = 22
     RESTARTABLE = 24
 
 
@@ -78,9 +78,9 @@ class LinkInfoType(IntEnum):
     ROW_COUNT = 3
     SQL_STATE = 4
     DBMS_CODE = 5
-    DESC = 6
+    DESCRIPTION = 6
     STAGE = 7
-    INST_ROW_COUNT = 8
+    INSTANCE_ROW_COUNT = 8
     EOT_ROW_COUNT = 9
     EXT_ROW_COUNT = 10
 
@@ -117,7 +117,7 @@ class ProjectInfoType(IntEnum):
 
     JOB_LIST = 1
     NAME = 2
-    HOST_NAME = 3
+    HOSTNAME = 3
     INSTALL_TAG = 4
     TCP_PORT = 5
     PATH = 6
@@ -132,8 +132,8 @@ class ProjectProperty(StrEnum):
     PROTECTION_ENABLED = "ProtectionEnabled"
     PX_ADVANCED_RUNTIME_OPTS = "PXAdvRTOptions"
     PX_DEPLOY_CUSTOM_ACTION = "PXDeployCustomAction"
-    PX_DEPLOY_JOBDIR_TEMPLATE = "PXDeployJobDirectoryTemplate"
-    PX_BASEDIR = "PXRemoteBaseDirectory"
+    PX_DEPLOY_JOB_DIR_TEMPLATE = "PXDeployJobDirectoryTemplate"
+    PX_BASE_DIR = "PXRemoteBaseDirectory"
     PX_DEPLOY_GENERATE_XML = "PXDeployGenerateXML"
 
 
@@ -166,9 +166,9 @@ class ReposRelationshipType(IntEnum):
 
     JOB_USES_JOB = 1
     JOB_USED_BY_JOB = 2
-    JOB_HAS_SOURCE_TABLEDEF = 3
-    JOB_HAS_TARGET_TABLEDEF = 4
-    JOB_HAS_SOURCE_OR_TARGET_TABLEDEF = 5
+    JOB_HAS_SOURCE_TABLE_DEF = 3
+    JOB_HAS_TARGET_TABLE_DEF = 4
+    JOB_HAS_SOURCE_OR_TARGET_TABLE_DEF = 5
 
 
 class RunMode(IntEnum):
@@ -188,11 +188,11 @@ class StageInfoType(IntEnum):
     NAME = 3
     TYPE = 4
     IN_ROW_NUM = 5
-    VAR_LIST = 6
+    VARIABLE_LIST = 6
     START_TIMESTAMP = 7
     END_TIMESTAMP = 8
-    DESC = 9
-    INST = 10
+    DESCRIPTION = 9
+    INSTANCES = 10
     CPU = 11
     LINK_TYPES = 12
     ELAPSED = 13
@@ -207,4 +207,4 @@ class VarInfoType(IntEnum):
     """Maps `infoType` values from `DSVARINFO`."""
 
     VALUE = 1
-    DESC = 2
+    DESCRIPTION = 2

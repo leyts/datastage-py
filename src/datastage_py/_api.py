@@ -71,7 +71,7 @@ class Project:
     @cached_property
     def hostname(self) -> str:
         """Engine hostname."""
-        info = self._get_info(ProjectInfoType.HOST_NAME)
+        info = self._get_info(ProjectInfoType.HOSTNAME)
         return decode_bytes(info.info.hostName)
 
     @cached_property
@@ -185,25 +185,25 @@ class Job:
     @property
     def wave_number(self) -> int:
         """Wave number of the last or current run."""
-        info = self._get_info(JobInfoType.WAVE_NO)
+        info = self._get_info(JobInfoType.WAVE_NUMBER)
         return int(info.info.jobWaveNumber)
 
     @property
     def short_description(self) -> str:
         """Job short description from the `Job Properties` dialogue."""
-        info = self._get_info(JobInfoType.DESC)
+        info = self._get_info(JobInfoType.DESCRIPTION)
         return decode_bytes(info.info.jobDesc)
 
     @property
     def full_description(self) -> str:
         """Job full description from the `Job Properties` dialogue."""
-        info = self._get_info(JobInfoType.FULL_DESC)
+        info = self._get_info(JobInfoType.FULL_DESCRIPTION)
         return decode_bytes(info.info.jobFullDesc)
 
     @property
     def parameters(self) -> list[str]:
         """Job parameter names."""
-        info = self._get_info(JobInfoType.PARAM_LIST)
+        info = self._get_info(JobInfoType.PARAMETER_LIST)
         return parse_null_separated(info.info.paramList)
 
     @property
@@ -276,7 +276,7 @@ class Stage:
     @property
     def description(self) -> str:
         """Stage description."""
-        info = self._get_info(StageInfoType.DESC)
+        info = self._get_info(StageInfoType.DESCRIPTION)
         return decode_bytes(info.info.stageDesc)
 
     @property
@@ -312,7 +312,7 @@ class Stage:
     @property
     def instances(self) -> list[str]:
         """Instance names (parallel jobs)."""
-        info = self._get_info(StageInfoType.INST)
+        info = self._get_info(StageInfoType.INSTANCES)
         return parse_null_separated(info.info.instList)
 
     @property
@@ -344,7 +344,7 @@ class Stage:
     @property
     def variables(self) -> list[str]:
         """Stage variable names."""
-        info = self._get_info(StageInfoType.VAR_LIST)
+        info = self._get_info(StageInfoType.VARIABLE_LIST)
         return parse_null_separated(info.info.varList)
 
     @property
@@ -396,7 +396,7 @@ class Link:
 
     @property
     def description(self) -> str:
-        info = self._get_info(LinkInfoType.DESC)
+        info = self._get_info(LinkInfoType.DESCRIPTION)
         return decode_bytes(info.info.linkDesc)
 
     @property
