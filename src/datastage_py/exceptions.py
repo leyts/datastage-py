@@ -250,9 +250,7 @@ class DSBadPropertyValueError(DSAPIError):
 class DSOSHVisibleFlagError(DSAPIError):
     token = "DSJE_OSHVISIBLEFLAG"
     code = -107
-    default_msg = (
-        "Failed to set OSHVisible value"  # TODO: Is `set` right here?
-    )
+    default_msg = "Failed to set OSHVisible value"
 
 
 class DSBadEnvVarNameError(DSAPIError):
