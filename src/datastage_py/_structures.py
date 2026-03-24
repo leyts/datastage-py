@@ -54,7 +54,7 @@ class _DSJOBINFO(Union):
         ("jobInvocationId", c_char_p),
         ("jobDesc", c_char_p),
         ("stageList2", POINTER(c_char)),
-        ("jobElapsed", c_int),
+        ("jobElapsed", c_char_p),
         ("jobDMIService", c_int),
         ("jobMultiInvokable", c_int),
         ("jobFullDesc", c_char_p),

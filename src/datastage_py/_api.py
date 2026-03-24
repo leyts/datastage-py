@@ -168,7 +168,7 @@ class Job:
     def elapsed_time(self) -> timedelta:
         """Job elapsed time."""
         info = self._get_info(JobInfoType.ELAPSED)
-        return timedelta(seconds=info.info.jobElapsed)
+        return timedelta(seconds=int(decode_bytes(info.info.jobElapsed)))
 
     @property
     def pid(self) -> int:
@@ -219,10 +219,10 @@ class Job:
         return parse_null_separated(info.info.jobInvocations)
 
     @property
-    def is_stop_requested(self) -> int:
+    def is_stop_requested(self) -> bool:
         """Whether a stop request has been issued for the job."""
         info = self._get_info(JobInfoType.CONTROL)
-        return int(info.info.jobControl)
+        return bool(info.info.jobControl)
 
     @property
     def is_web_service(self) -> bool:
@@ -301,7 +301,7 @@ class Stage:
     def elapsed_time(self) -> timedelta:
         """Stage elapsed time."""
         info = self._get_info(StageInfoType.ELAPSED)
-        return timedelta(seconds=info.info.stageElapsed)
+        return timedelta(seconds=int(decode_bytes(info.info.stageElapsed)))
 
     @property
     def row_count(self) -> int:

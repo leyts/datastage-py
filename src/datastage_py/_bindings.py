@@ -7,6 +7,7 @@ from ctypes import (
     c_char_p,
     c_int,
     c_void_p,
+    create_string_buffer,
     pointer,
 )
 from typing import TYPE_CHECKING, Literal, NoReturn
@@ -683,7 +684,7 @@ class DSAPI:
         self._api.DSLogEvent.restype = c_int
 
         res = self._api.DSLogEvent(
-            job_name, event_type, encode_string(""), encode_string(message)
+            job_name, event_type, None, encode_string(message)
         )
 
         if res != 0:
@@ -844,7 +845,7 @@ class DSAPI:
         self._api.DSServerMessage.restype = c_int
 
         encoded_prms = [encode_string(str(prm)) for prm in prms]
-        res_message = c_char_p(encode_string(""))
+        res_message = create_string_buffer(size_message)
 
         # TODO: `msg_size` not in use?
         msg_size = self._api.DSServerMessage(
