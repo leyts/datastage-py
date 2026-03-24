@@ -51,12 +51,12 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"src/datastage_py/_structures.py" = [
+    "RUF012",
+]
 "src/datastage_py/exceptions.py" = [
     "E501",
     "S105",
-]
-"src/datastage_py/structures.py" = [
-    "RUF012",
 ]
 
 [tool.ruff.lint.pydocstyle]

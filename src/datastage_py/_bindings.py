@@ -11,7 +11,7 @@ from ctypes import (
 )
 from typing import TYPE_CHECKING, Literal, NoReturn
 
-from datastage_py.enums import (
+from datastage_py._constants import (
     CustInfoType,
     EnvVarType,
     JobInfoType,
@@ -27,8 +27,7 @@ from datastage_py.enums import (
     StageInfoType,
     VarInfoType,
 )
-from datastage_py.exceptions import DSNoMoreError, raise_for_error
-from datastage_py.structures import (
+from datastage_py._structures import (
     DSCUSTINFO,
     DSJOB,
     DSJOBINFO,
@@ -47,6 +46,7 @@ from datastage_py.structures import (
     DSVARINFO,
     time_t,
 )
+from datastage_py.exceptions import DSNoMoreError, raise_for_error
 from datastage_py.utils import (
     decode_bytes,
     encode_string,

@@ -5,7 +5,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from datastage_py.enums import (
+from datastage_py._constants import (
     JobInfoType,
     JobStatus,
     LinkInfoType,
@@ -23,8 +23,8 @@ if TYPE_CHECKING:
     from types import TracebackType
     from typing import Self
 
-    from datastage_py.datastage import DSAPI, JobHandle, ProjectHandle
-    from datastage_py.structures import (
+    from datastage_py._bindings import DSAPI, JobHandle, ProjectHandle
+    from datastage_py._structures import (
         DSJOBINFO,
         DSLINKINFO,
         DSPROJECTINFO,

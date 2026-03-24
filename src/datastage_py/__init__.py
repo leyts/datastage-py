@@ -1,7 +1,8 @@
 """datastage-py package."""
 
-from datastage_py.datastage import DSAPI
-from datastage_py.enums import (
+from datastage_py._api import Job, Link, Project, Stage
+from datastage_py._bindings import DSAPI
+from datastage_py._constants import (
     CustInfoType,
     EnvVarType,
     JobInfoType,
@@ -20,7 +21,6 @@ from datastage_py.enums import (
     StageInfoType,
     VarInfoType,
 )
-from datastage_py.models import Job, Link, Project, Stage
 
 __all__ = [
     "DSAPI",
