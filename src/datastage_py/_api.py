@@ -168,7 +168,7 @@ class Job:
     def elapsed_time(self) -> timedelta:
         """Job elapsed time."""
         info = self._get_info(JobInfoType.ELAPSED)
-        return timedelta(seconds=int(decode_bytes(info.info.jobElapsed)))
+        return timedelta(seconds=info.info.jobElapsed)
 
     @property
     def pid(self) -> int:

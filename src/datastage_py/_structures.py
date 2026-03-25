@@ -54,7 +54,8 @@ class _DSJOBINFO(Union):
         ("jobInvocationId", c_char_p),
         ("jobDesc", c_char_p),
         ("stageList2", POINTER(c_char)),
-        ("jobElapsed", c_char_p),
+        # The C API declares `char*` but writes an `int`.
+        ("jobElapsed", c_int),
         ("jobDMIService", c_int),
         ("jobMultiInvokable", c_int),
         ("jobFullDesc", c_char_p),
