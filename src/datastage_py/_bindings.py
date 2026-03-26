@@ -3,6 +3,7 @@
 from ctypes import (
     CDLL,
     POINTER,
+    _Pointer,
     c_char,
     c_char_p,
     c_int,
@@ -55,14 +56,10 @@ from datastage_py.utils import (
 )
 
 if TYPE_CHECKING:
-    from ctypes import _Pointer
     from pathlib import Path
 
-    ProjectHandle = _Pointer[DSPROJECT]
-    JobHandle = _Pointer[DSJOB]
-else:
-    ProjectHandle = POINTER(DSPROJECT)
-    JobHandle = POINTER(DSJOB)
+type ProjectHandle = _Pointer[DSPROJECT]
+type JobHandle = _Pointer[DSJOB]
 
 
 class DSAPI:

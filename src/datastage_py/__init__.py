@@ -1,7 +1,7 @@
 """datastage-py package."""
 
 from datastage_py._api import Job, Link, Project, Server, Stage
-from datastage_py._bindings import DSAPI
+from datastage_py._bindings import DSAPI, JobHandle, ProjectHandle
 from datastage_py._constants import (
     CustInfoType,
     EnvVarType,
@@ -27,6 +27,7 @@ __all__ = [
     "CustInfoType",
     "EnvVarType",
     "Job",
+    "JobHandle",
     "JobInfoType",
     "JobStatus",
     "LimitType",
@@ -35,6 +36,7 @@ __all__ = [
     "LogEventType",
     "ParamType",
     "Project",
+    "ProjectHandle",
     "ProjectInfoType",
     "ProjectProperty",
     "ReportType",
