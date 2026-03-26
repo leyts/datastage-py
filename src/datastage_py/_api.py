@@ -32,16 +32,61 @@ if TYPE_CHECKING:
     )
 
 
-class Project:
-    """Pythonic wrapper around a DataStage project handle."""
+class Server:
+    """High-level entry point for a DataStage server."""
 
-    def __init__(self, api: DSAPI, handle: ProjectHandle) -> None:
-        """Wrap an already-opened project handle."""
+    def __init__(
+        self,
+        api: DSAPI,
+        *,
+        domain_name: str | None = None,
+        hostname: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+    ) -> None:
+        """Initialise the server wrapper."""
         self._api = api
-        self._handle = handle
+        if (
+            domain_name is not None
+            and hostname is not None
+            and username is not None
+            and password is not None
+        ):
+            self._api.DSSetServerParams(
+                domain_name,
+                hostname,
+                username,
+                password,
+            )
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(api={self._api!r})"
+
+    @property
+    def api(self) -> DSAPI:
+        """Low-level API instance."""
+        return self._api
+
+    @property
+    def list_projects(self) -> list[str]:
+        """List all projects on the server."""
+        return self._api.DSGetProjectList()
+
+    def open_project(self, name: str) -> Project:
+        """Open a project handle and return a :class:`Project` instance."""
+        handle = self._api.DSOpenProject(name)
+        return Project(self._api, handle)
+
+
+class Project:
+    """A DataStage project."""
+
+    def __init__(self, api: DSAPI, project_handle: ProjectHandle) -> None:
+        self._api = api
+        self._handle = project_handle
+        self._closed = False
 
     def __enter__(self) -> Self:
-        """Enter the context manager."""
         return self
 
     def __exit__(
@@ -51,10 +96,12 @@ class Project:
         exc_tb: TracebackType | None,
     ) -> None:
         """Close the project handle."""
-        self._api.DSCloseProject(self._handle)
+        self.close()
 
-    def _get_info(self, info_type: ProjectInfoType) -> DSPROJECTINFO:
-        return self._api.DSGetProjectInfo(self._handle, info_type)
+    @property
+    def handle(self) -> ProjectHandle:
+        """Raw project handle."""
+        return self._handle
 
     @cached_property
     def name(self) -> str:
@@ -87,27 +134,36 @@ class Project:
         return int(info.info.tcpPort)
 
     @property
-    def jobs(self) -> list[str]:
-        """Job names in the project."""
+    def list_jobs(self) -> list[str]:
+        """List all jobs in the project."""
         info = self._get_info(ProjectInfoType.JOB_LIST)
         return parse_null_separated(info.info.jobList)
 
     def open_job(self, name: str) -> Job:
-        """Open a job by name and return a :class:`Job` wrapper."""
+        """Open a job handle and return a :class:`Job` instance."""
         handle = self._api.DSOpenJob(self._handle, name)
         return Job(self._api, handle)
 
+    def close(self) -> None:
+        """Close the project. Safe to call multiple times."""
+        if self._closed:
+            return
+        self._api.DSCloseProject(self._handle)
+        self._closed = True
+
+    def _get_info(self, info_type: ProjectInfoType) -> DSPROJECTINFO:
+        return self._api.DSGetProjectInfo(self._handle, info_type)
+
 
 class Job:
-    """Pythonic wrapper around a DataStage job handle."""
+    """A DataStage job."""
 
-    def __init__(self, api: DSAPI, handle: JobHandle) -> None:
-        """Wrap an already-opened job handle."""
+    def __init__(self, api: DSAPI, job_handle: JobHandle) -> None:
         self._api = api
-        self._handle = handle
+        self._handle = job_handle
+        self._closed = False
 
     def __enter__(self) -> Self:
-        """Enter the context manager."""
         return self
 
     def __exit__(
@@ -117,10 +173,12 @@ class Job:
         exc_tb: TracebackType | None,
     ) -> None:
         """Close the job handle."""
-        self._api.DSCloseJob(self._handle)
+        self.close()
 
-    def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
-        return self._api.DSGetJobInfo(self._handle, info_type)
+    @property
+    def handle(self) -> JobHandle:
+        """Raw job handle."""
+        return self._handle
 
     @cached_property
     def name(self) -> str:
@@ -142,13 +200,13 @@ class Job:
 
     @property
     def interim_status(self) -> JobStatus:
-        """Status after all stages have run, before the after-job subroutine."""  # noqa: E501
+        """Job status after all stages run, before the after-job subroutine."""
         info = self._get_info(JobInfoType.INTERIM_STATUS)
         return JobStatus(info.info.jobInterimStatus)
 
     @property
     def user_status(self) -> str:
-        """Job user status, if any."""
+        """Job user status."""
         info = self._get_info(JobInfoType.USER_STATUS)
         return decode_bytes(info.info.userStatus)
 
@@ -201,20 +259,20 @@ class Job:
         return decode_bytes(info.info.jobFullDesc)
 
     @property
-    def parameters(self) -> list[str]:
-        """Job parameter names."""
+    def list_parameters(self) -> list[str]:
+        """List all job parameter names."""
         info = self._get_info(JobInfoType.PARAMETER_LIST)
         return parse_null_separated(info.info.paramList)
 
     @property
-    def stages(self) -> list[str]:
-        """Active job stages."""
+    def list_stages(self) -> list[str]:
+        """List all active job stages."""
         info = self._get_info(JobInfoType.STAGE_LIST)
         return parse_null_separated(info.info.stageList)
 
     @property
-    def invocation_ids(self) -> list[str]:
-        """Job invocation names."""
+    def list_invocations(self) -> list[str]:
+        """List all job invocation names."""
         info = self._get_info(JobInfoType.INVOCATIONS)
         return parse_null_separated(info.info.jobInvocations)
 
@@ -243,23 +301,27 @@ class Job:
         return bool(info.info.jobRestartable)
 
     def open_stage(self, name: str) -> Stage:
-        """Return a :class:`Stage` wrapper for the given stage."""
+        """Return a :class:`Stage` instance for a given stage."""
         return Stage(self._api, self._handle, name)
+
+    def close(self) -> None:
+        """Close the job. Safe to call multiple times."""
+        if self._closed:
+            return
+        self._api.DSCloseJob(self._handle)
+        self._closed = True
+
+    def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
+        return self._api.DSGetJobInfo(self._handle, info_type)
 
 
 class Stage:
-    """Pythonic wrapper around DataStage stage info queries."""
+    """A stage within a DataStage job."""
 
     def __init__(self, api: DSAPI, job_handle: JobHandle, name: str) -> None:
-        """Wrap stage info access for the given stage name."""
         self._api = api
-        self._job_handle = job_handle
+        self._handle = job_handle
         self._name = name
-
-    def _get_info(self, info_type: StageInfoType) -> DSSTAGEINFO:
-        return self._api.DSGetStageInfo(
-            self._job_handle, self._name, info_type
-        )
 
     @cached_property
     def name(self) -> str:
@@ -310,19 +372,19 @@ class Stage:
         return int(info.info.inRowNum)
 
     @property
-    def instances(self) -> list[str]:
-        """Instance names (parallel jobs)."""
+    def list_instances(self) -> list[str]:
+        """List all instance names (parallel jobs)."""
         info = self._get_info(StageInfoType.INSTANCES)
         return parse_null_separated(info.info.instList)
 
     @property
-    def process_ids(self) -> list[int]:
-        """Process IDs (parallel jobs)."""
+    def list_pids(self) -> list[int]:
+        """List all process IDs (parallel jobs)."""
         info = self._get_info(StageInfoType.PID)
         return [int(s) for s in parse_null_separated(info.info.pidList)]
 
     @property
-    def cpu_times(self) -> list[timedelta]:
+    def list_cpu_times(self) -> list[timedelta]:
         info = self._get_info(StageInfoType.CPU)
         return [
             timedelta(seconds=int(s))
@@ -330,20 +392,20 @@ class Stage:
         ]
 
     @property
-    def links(self) -> list[str]:
-        """Link names."""
+    def list_links(self) -> list[str]:
+        """List all link names."""
         info = self._get_info(StageInfoType.LINK_LIST)
         return parse_null_separated(info.info.linkList)
 
     @property
-    def link_types(self) -> list[str]:
-        """Link types."""
+    def list_link_types(self) -> list[str]:
+        """List all link types."""
         info = self._get_info(StageInfoType.LINK_TYPES)
         return parse_null_separated(info.info.linkTypes)
 
     @property
-    def variables(self) -> list[str]:
-        """Stage variable names."""
+    def list_variables(self) -> list[str]:
+        """List all stage variable names."""
         info = self._get_info(StageInfoType.VARIABLE_LIST)
         return parse_null_separated(info.info.varList)
 
@@ -353,26 +415,23 @@ class Stage:
         return parse_null_separated(info.info.custInfoList)
 
     def open_link(self, name: str) -> Link:
-        """Return a :class:`Link` wrapper for the given link."""
-        return Link(self._api, self._job_handle, self._name, name)
+        """Return a :class:`Link` instance for a given link."""
+        return Link(self._api, self._handle, self._name, name)
+
+    def _get_info(self, info_type: StageInfoType) -> DSSTAGEINFO:
+        return self._api.DSGetStageInfo(self._handle, self._name, info_type)
 
 
 class Link:
-    """Pythonic wrapper around DataStage link info queries."""
+    """A link to or from a stage within a DataStage job."""
 
     def __init__(
         self, api: DSAPI, job_handle: JobHandle, stage_name: str, name: str
     ) -> None:
-        """Wrap link info access for the given link name."""
         self._api = api
-        self._job_handle = job_handle
+        self._handle = job_handle
         self._stage_name = stage_name
         self._name = name
-
-    def _get_info(self, info_type: LinkInfoType) -> DSLINKINFO:
-        return self._api.DSGetLinkInfo(
-            self._job_handle, self._stage_name, self._name, info_type
-        )
 
     @cached_property
     def name(self) -> str:
@@ -401,5 +460,11 @@ class Link:
 
     @property
     def stage(self) -> str:
+        """Name of the stage at the other end of the link."""
         info = self._get_info(LinkInfoType.STAGE)
         return decode_bytes(info.info.linkedStage)
+
+    def _get_info(self, info_type: LinkInfoType) -> DSLINKINFO:
+        return self._api.DSGetLinkInfo(
+            self._handle, self._stage_name, self._name, info_type
+        )

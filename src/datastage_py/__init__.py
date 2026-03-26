@@ -1,6 +1,6 @@
 """datastage-py package."""
 
-from datastage_py._api import Job, Link, Project, Stage
+from datastage_py._api import Job, Link, Project, Server, Stage
 from datastage_py._bindings import DSAPI
 from datastage_py._constants import (
     CustInfoType,
@@ -42,6 +42,7 @@ __all__ = [
     "ReposObjectType",
     "ReposRelationshipType",
     "RunMode",
+    "Server",
     "Stage",
     "StageInfoType",
     "VarInfoType",
