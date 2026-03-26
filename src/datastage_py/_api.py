@@ -40,21 +40,16 @@ class Server:
         api: DSAPI,
         *,
         domain_name: str | None = None,
-        hostname: str | None = None,
+        server_name: str | None = None,
         username: str | None = None,
         password: str | None = None,
     ) -> None:
         """Initialise the server wrapper."""
         self._api = api
-        if (
-            domain_name is not None
-            and hostname is not None
-            and username is not None
-            and password is not None
-        ):
+        if domain_name is not None:
             self._api.DSSetServerParams(
                 domain_name,
-                hostname,
+                server_name,
                 username,
                 password,
             )
