@@ -76,9 +76,9 @@ class Server:
 class Project:
     """A DataStage project."""
 
-    def __init__(self, api: DSAPI, project_handle: ProjectHandle) -> None:
+    def __init__(self, api: DSAPI, handle: ProjectHandle) -> None:
         self._api = api
-        self._handle = project_handle
+        self._handle = handle
         self._closed = False
 
     def __enter__(self) -> Self:
@@ -153,9 +153,9 @@ class Project:
 class Job:
     """A DataStage job."""
 
-    def __init__(self, api: DSAPI, job_handle: JobHandle) -> None:
+    def __init__(self, api: DSAPI, handle: JobHandle) -> None:
         self._api = api
-        self._handle = job_handle
+        self._handle = handle
         self._closed = False
 
     def __enter__(self) -> Self:
@@ -313,9 +313,9 @@ class Job:
 class Stage:
     """A stage within a DataStage job."""
 
-    def __init__(self, api: DSAPI, job_handle: JobHandle, name: str) -> None:
+    def __init__(self, api: DSAPI, handle: JobHandle, name: str) -> None:
         self._api = api
-        self._handle = job_handle
+        self._handle = handle
         self._name = name
 
     @cached_property
@@ -421,10 +421,10 @@ class Link:
     """A link to or from a stage within a DataStage job."""
 
     def __init__(
-        self, api: DSAPI, job_handle: JobHandle, stage_name: str, name: str
+        self, api: DSAPI, handle: JobHandle, stage_name: str, name: str
     ) -> None:
         self._api = api
-        self._handle = job_handle
+        self._handle = handle
         self._stage_name = stage_name
         self._name = name
 
