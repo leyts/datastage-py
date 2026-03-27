@@ -43,6 +43,7 @@ from datastage_py._structures import (
     DSPROJECTINFO,
     DSREPORTINFO,
     DSREPOSINFO,
+    DSREPOSJOBINFO,
     DSREPOSUSAGE,
     DSSTAGEINFO,
     DSVARINFO,
@@ -67,7 +68,7 @@ class DSAPI:
 
     def __init__(self) -> None:
         self.__api: CDLL | None = None
-        self.__project_name = None
+        self.__project_handle: ProjectHandle | None = None
 
     @property
     def _api(self) -> CDLL:
@@ -104,7 +105,7 @@ class DSAPI:
 
         project_list = self._api.DSGetProjectList()
 
-        if not project_list:
+        if project_list is None:
             self._raise_last_error("DSGetProjectList")
         return parse_null_separated(project_list)
 
@@ -112,13 +113,14 @@ class DSAPI:
         self._api.DSOpenProjectEx.argtypes = [c_int, c_char_p]
         self._api.DSOpenProjectEx.restype = POINTER(DSPROJECT)
 
-        handle = self._api.DSOpenProjectEx(
+        handle: ProjectHandle = self._api.DSOpenProjectEx(
             self.DSAPI_VERSION, encode_string(name)
         )
 
-        if not handle:
+        if handle is None:
             self._raise_last_error("DSOpenProject")
-        self.__project_name = handle
+
+        self.__project_handle = handle
         return handle
 
     def DSGetProjectInfo(
@@ -132,7 +134,7 @@ class DSAPI:
         self._api.DSGetProjectInfo.restype = c_int
 
         proj_info = DSPROJECTINFO()
-        res = self._api.DSGetProjectInfo(
+        res: int = self._api.DSGetProjectInfo(
             project_handle, info_type, pointer(proj_info)
         )
 
@@ -149,11 +151,13 @@ class DSAPI:
         error_code = self._api.DSGetLastError()
         error_msg = ""
 
-        if self.__project_name is not None:
+        # If `ProjectHandle` is NULL, `DSGetLastErrorMsg` retrieves the error
+        # message associated with the last call to `DSOpenProject`` or
+        #  `DSGetProjectList`.
+        if self.__project_handle is not None:
             error_msg = decode_bytes(
-                self._api.DSGetLastErrorMsg(self.__project_name)
+                self._api.DSGetLastErrorMsg(self.__project_handle)
             )
-
         return error_code, error_msg
 
     def DSOpenJob(self, project_handle: ProjectHandle, name: str) -> JobHandle:
@@ -163,11 +167,11 @@ class DSAPI:
         ]
         self._api.DSOpenJob.restype = POINTER(DSJOB)
 
-        handle = self._api.DSOpenJob(
+        handle: JobHandle = self._api.DSOpenJob(
             project_handle, c_char_p(encode_string(name))
         )
 
-        if not handle:
+        if handle is None:
             self._raise_last_error("DSOpenJob")
         return handle
 
@@ -182,7 +186,9 @@ class DSAPI:
         self._api.DSGetJobInfo.restype = c_int
 
         job_info = DSJOBINFO()
-        res = self._api.DSGetJobInfo(job_handle, info_type, pointer(job_info))
+        res: int = self._api.DSGetJobInfo(
+            job_handle, info_type, pointer(job_info)
+        )
 
         if res != 0:
             self._raise_last_error("DSGetJobInfo")
@@ -200,7 +206,7 @@ class DSAPI:
         self._api.DSGetStageInfo.restype = c_int
 
         stage_info = DSSTAGEINFO()
-        res = self._api.DSGetStageInfo(
+        res: int = self._api.DSGetStageInfo(
             job_handle,
             encode_string(name),
             info_type,
@@ -228,7 +234,7 @@ class DSAPI:
         self._api.DSGetLinkInfo.restype = c_int
 
         link_info = DSLINKINFO()
-        res = self._api.DSGetLinkInfo(
+        res: int = self._api.DSGetLinkInfo(
             job_handle,
             encode_string(stage_name),
             encode_string(name),
@@ -257,7 +263,7 @@ class DSAPI:
         self._api.DSGetVarInfo.restype = c_int
 
         var_info = DSVARINFO()
-        res = self._api.DSGetVarInfo(
+        res: int = self._api.DSGetVarInfo(
             job_handle,
             encode_string(stage_name),
             encode_string(name),
@@ -286,7 +292,7 @@ class DSAPI:
         self._api.DSGetCustInfo.restype = c_int
 
         cust_info = DSCUSTINFO()
-        res = self._api.DSGetCustInfo(
+        res: int = self._api.DSGetCustInfo(
             job_handle,
             encode_string(stage_name),
             encode_string(name),
@@ -331,7 +337,7 @@ class DSAPI:
         self._api.DSFindFirstLogEntry.restype = c_int
 
         log_info = DSLOGEVENT()
-        res = self._api.DSFindFirstLogEntry(
+        res: int = self._api.DSFindFirstLogEntry(
             job_handle,
             event_type,
             start_time,
@@ -354,7 +360,7 @@ class DSAPI:
         self._api.DSFindNextLogEntry.restype = c_int
 
         log_event = DSLOGEVENT()
-        res = self._api.DSFindNextLogEntry(job_handle, pointer(log_event))
+        res: int = self._api.DSFindNextLogEntry(job_handle, pointer(log_event))
 
         if res != 0:
             if res == DSNoMoreError.code:
@@ -373,7 +379,7 @@ class DSAPI:
         self._api.DSGetLogEntryFull.restype = c_int
 
         log_detail = DSLOGDETAILFULL()
-        res = self._api.DSGetLogEntryFull(
+        res: int = self._api.DSGetLogEntryFull(
             job_handle, event_id, pointer(log_detail)
         )
 
@@ -392,7 +398,7 @@ class DSAPI:
         self._api.DSGetLogEntry.restype = c_int
 
         log_detail = DSLOGDETAIL()
-        res = self._api.DSGetLogEntry(
+        res: int = self._api.DSGetLogEntry(
             job_handle, event_id, pointer(log_detail)
         )
 
@@ -406,9 +412,9 @@ class DSAPI:
         self._api.DSGetNewestLogId.argtypes = [POINTER(DSJOB), c_int]
         self._api.DSGetNewestLogId.restype = c_int
 
-        last_log_id = self._api.DSGetNewestLogId(job_handle, event_type)
+        last_log_id: int = self._api.DSGetNewestLogId(job_handle, event_type)
 
-        if last_log_id == -1:  # TODO: Check this
+        if last_log_id == -1:
             self._raise_last_error("DSGetNewestLogId")
         return last_log_id
 
@@ -424,7 +430,7 @@ class DSAPI:
         self._api.DSGetLogEventIds.restype = c_int
 
         events_pointer = POINTER(c_char)()
-        res = self._api.DSGetLogEventIds(
+        res: int = self._api.DSGetLogEventIds(
             job_handle,
             run_number,
             encode_string(filter_type),
@@ -445,7 +451,7 @@ class DSAPI:
         self._api.DSSetJobQueue.argtypes = [POINTER(DSJOB), c_char_p]
         self._api.DSSetJobQueue.restype = c_int
 
-        res = self._api.DSSetJobQueue(job_handle, encode_string(name))
+        res: int = self._api.DSSetJobQueue(job_handle, encode_string(name))
 
         if res != 0:
             self._raise_last_error("DSSetJobQueue")
@@ -454,7 +460,7 @@ class DSAPI:
         self._api.DSCloseJob.argtypes = [POINTER(DSJOB)]
         self._api.DSCloseJob.restype = c_int
 
-        res = self._api.DSCloseJob(job_handle)
+        res: int = self._api.DSCloseJob(job_handle)
 
         if res != 0:
             self._raise_last_error("DSCloseJob")
@@ -463,11 +469,11 @@ class DSAPI:
         self._api.DSCloseProject.argtypes = [POINTER(DSPROJECT)]
         self._api.DSCloseProject.restype = c_int
 
-        res = self._api.DSCloseProject(project_handle)
+        res: int = self._api.DSCloseProject(project_handle)
 
         if res != 0:
             self._raise_last_error("DSCloseProject")
-        self.__project_name = None
+        self.__project_handle = None
 
     def DSSetJobLimit(
         self, job_handle: JobHandle, limit_type: LimitType, value: int
@@ -475,7 +481,7 @@ class DSAPI:
         self._api.DSSetJobLimit.argtypes = [POINTER(DSJOB), c_int, c_int]
         self._api.DSSetJobLimit.restype = c_int
 
-        res = self._api.DSSetJobLimit(job_handle, limit_type, value)
+        res: int = self._api.DSSetJobLimit(job_handle, limit_type, value)
 
         if res != 0:
             self._raise_last_error("DSSetJobLimit")
@@ -484,7 +490,7 @@ class DSAPI:
         self._api.DSPurgeJob.argtypes = [POINTER(DSJOB), c_int]
         self._api.DSPurgeJob.restype = c_int
 
-        res = self._api.DSPurgeJob(job_handle, purge_spec)
+        res: int = self._api.DSPurgeJob(job_handle, purge_spec)
 
         if res != 0:
             self._raise_last_error("DSPurgeJob")
@@ -493,7 +499,7 @@ class DSAPI:
         self._api.DSRunJob.argtypes = [POINTER(DSJOB), c_int]
         self._api.DSRunJob.restype = c_int
 
-        res = self._api.DSRunJob(job_handle, run_mode)
+        res: int = self._api.DSRunJob(job_handle, run_mode)
 
         if res != 0:
             self._raise_last_error("DSRunJob")
@@ -502,7 +508,7 @@ class DSAPI:
         self._api.DSStopJob.argtypes = [POINTER(DSJOB)]
         self._api.DSStopJob.restype = c_int
 
-        res = self._api.DSStopJob(job_handle)
+        res: int = self._api.DSStopJob(job_handle)
 
         if res != 0:
             self._raise_last_error("DSStopJob")
@@ -511,7 +517,7 @@ class DSAPI:
         self._api.DSLockJob.argtypes = [POINTER(DSJOB)]
         self._api.DSLockJob.restype = c_int
 
-        res = self._api.DSLockJob(job_handle)
+        res: int = self._api.DSLockJob(job_handle)
 
         if res != 0:
             self._raise_last_error("DSLockJob")
@@ -520,7 +526,7 @@ class DSAPI:
         self._api.DSUnlockJob.argtypes = [POINTER(DSJOB)]
         self._api.DSUnlockJob.restype = c_int
 
-        res = self._api.DSUnlockJob(job_handle)
+        res: int = self._api.DSUnlockJob(job_handle)
 
         if res != 0:
             self._raise_last_error("DSUnlockJob")
@@ -529,7 +535,7 @@ class DSAPI:
         self._api.DSWaitForJob.argtypes = [POINTER(DSJOB)]
         self._api.DSWaitForJob.restype = c_int
 
-        res = self._api.DSWaitForJob(job_handle)
+        res: int = self._api.DSWaitForJob(job_handle)
 
         if res != 0:
             self._raise_last_error("DSWaitForJob")
@@ -544,7 +550,7 @@ class DSAPI:
         ]
         self._api.DSSetParam.restype = c_int
 
-        res = self._api.DSSetParam(
+        res: int = self._api.DSSetParam(
             job_handle, encode_string(name), pointer(param)
         )
 
@@ -560,7 +566,7 @@ class DSAPI:
         self._api.DSGetParamInfo.restype = c_int
 
         param_info = DSPARAMINFO()
-        res = self._api.DSGetParamInfo(
+        res: int = self._api.DSGetParamInfo(
             job_handle, encode_string(name), pointer(param_info)
         )
 
@@ -573,10 +579,12 @@ class DSAPI:
         job_handle: JobHandle,
         report_type: ReportType,
         line_sep: Literal["CRLF", "LF", "CR"],
-    ):
+    ):  # TODO: Add type hint
         """Generate a job report.
 
         Args:
+            job_handle: Job handle.
+            report_type: Report type.
             line_sep: Line separator in the report. Defaults to CRLF on
                 Windows and LF on other platforms.
         """
@@ -589,7 +597,7 @@ class DSAPI:
         self._api.DSMakeJobReport.restype = c_int
 
         report_info = DSREPORTINFO()
-        res = self._api.DSMakeJobReport(
+        res: int = self._api.DSMakeJobReport(
             job_handle,
             report_type,
             encode_string(line_sep),
@@ -606,7 +614,7 @@ class DSAPI:
         relationship_type: ReposRelationshipType,
         object_name: str,
         recursive: int = 0,
-    ):
+    ) -> None | DSREPOSUSAGE:
         self._api.DSGetReposUsage.argtypes = [
             POINTER(DSPROJECT),
             c_int,
@@ -617,7 +625,10 @@ class DSAPI:
         self._api.DSGetReposUsage.restype = c_int
 
         repos_usage = DSREPOSUSAGE()
-        res = self._api.DSGetReposUsage(
+
+        # On success, `DSGetReposUsage` returns the number of objects that have
+        # been found.
+        res: int = self._api.DSGetReposUsage(
             project_handle,
             relationship_type,
             encode_string(object_name),
@@ -625,13 +636,14 @@ class DSAPI:
             pointer(repos_usage),
         )
 
-        if res > 0:
-            return repos_usage.info.jobs.contents
+        if res < 0:
+            self._raise_last_error("DSGetReposUsage")
         if res == 0:
             return None
-        self._raise_last_error("DSGetReposUsage")
 
-    def DSGetReposInfo(
+        return repos_usage.info.jobs.contents
+
+    def DSGetReposInfo(  # noqa: PLR0913
         self,
         project_handle: ProjectHandle,
         object_type: ReposObjectType,
@@ -639,7 +651,7 @@ class DSAPI:
         search_criteria: str,
         starting_category: str,
         subcategories: int = 1,
-    ):
+    ) -> None | DSREPOSJOBINFO:
         self._api.DSGetReposInfo.argtypes = [
             POINTER(DSPROJECT),
             c_int,
@@ -652,7 +664,10 @@ class DSAPI:
         self._api.DSGetReposInfo.restype = c_int
 
         repos_info = DSREPOSINFO()
-        res = self._api.DSGetReposInfo(
+
+        # On success, `DSGetReposInfo` returns the number of objects that have
+        # been found.
+        res: int = self._api.DSGetReposInfo(
             project_handle,
             object_type,
             info_type,
@@ -662,11 +677,12 @@ class DSAPI:
             pointer(repos_info),
         )
 
-        if res > 0:
-            return repos_info.info.jobs.contents
+        if res < 0:
+            self._raise_last_error("DSGetReposInfo")
         if res == 0:
             return None
-        self._raise_last_error("DSGetReposInfo")
+
+        return repos_info.info.jobs.contents
 
     def DSLogEvent(
         self, job_handle: JobHandle, event_type: LogEventType, message: str
@@ -679,7 +695,7 @@ class DSAPI:
         ]
         self._api.DSLogEvent.restype = c_int
 
-        res = self._api.DSLogEvent(
+        res: int = self._api.DSLogEvent(
             job_handle, event_type, None, encode_string(message)
         )
 
@@ -703,7 +719,7 @@ class DSAPI:
         ]
         self._api.DSAddEnvVar.restype = c_int
 
-        res = self._api.DSAddEnvVar(
+        res: int = self._api.DSAddEnvVar(
             project_handle,
             encode_string(name),
             encode_string(var_type),
@@ -718,7 +734,9 @@ class DSAPI:
         self._api.DSDeleteEnvVar.argtypes = [POINTER(DSPROJECT), c_char_p]
         self._api.DSDeleteEnvVar.restype = c_int
 
-        res = self._api.DSDeleteEnvVar(project_handle, encode_string(name))
+        res: int = self._api.DSDeleteEnvVar(
+            project_handle, encode_string(name)
+        )
 
         if res != 0:
             self._raise_last_error("DSDeleteEnvVar")
@@ -733,7 +751,7 @@ class DSAPI:
         ]
         self._api.DSSetEnvVar.restype = c_int
 
-        res = self._api.DSSetEnvVar(
+        res: int = self._api.DSSetEnvVar(
             project_handle, encode_string(name), encode_string(value)
         )
 
@@ -754,7 +772,7 @@ class DSAPI:
         self._api.DSAddProject.argtypes = [c_char_p, c_char_p]
         self._api.DSAddProject.restype = c_int
 
-        res = self._api.DSAddProject(
+        res: int = self._api.DSAddProject(
             encode_string(name), encode_string(location)
         )
 
@@ -765,12 +783,14 @@ class DSAPI:
         self._api.DSDeleteProject.argtypes = [c_char_p]
         self._api.DSDeleteProject.restype = c_int
 
-        res = self._api.DSDeleteProject(encode_string(name))
+        res: int = self._api.DSDeleteProject(encode_string(name))
 
         if res != 0:
             self._raise_last_error("DSDeleteProject")
 
-    def DSGetIdForJob(self, project_handle: ProjectHandle, name: str):
+    def DSGetIdForJob(
+        self, project_handle: ProjectHandle, name: str
+    ) -> c_char_p:
         self._api.DSGetIdForJob.argtypes = [POINTER(DSPROJECT), c_char_p]
         self._api.DSGetIdForJob.restype = c_char_p
 
@@ -790,14 +810,16 @@ class DSAPI:
         ]
         self._api.DSSetIdForJob.restype = c_int
 
-        res = self._api.DSSetIdForJob(
+        res: int = self._api.DSSetIdForJob(
             project_handle, encode_string(name), encode_string(job_id)
         )
 
         if res != 0:
             self._raise_last_error("DSSetIdForJob")
 
-    def DSJobNameFromJobId(self, project_handle: ProjectHandle, job_id: str):
+    def DSJobNameFromJobId(
+        self, project_handle: ProjectHandle, job_id: str
+    ) -> c_char_p:
         self._api.DSJobNameFromJobId.argtypes = [POINTER(DSPROJECT), c_char_p]
         self._api.DSJobNameFromJobId.restype = c_char_p
 
@@ -840,7 +862,7 @@ class DSAPI:
         )  # TODO: Can `message_size` be calculated at runtime?
 
         # TODO: `msg_size` not in use?
-        msg_size = self._api.DSServerMessage(
+        msg_size: int = self._api.DSServerMessage(
             encode_string(message_id),
             encode_string(message),
             (c_char_p * max_params)(*encoded_params),
@@ -862,7 +884,7 @@ class DSAPI:
         ]
         self._api.DSSetProjectProperty.restype = c_int
 
-        res = self._api.DSSetProjectProperty(
+        res: int = self._api.DSSetProjectProperty(
             project_handle, encode_string(name), encode_string(value)
         )
 
@@ -885,7 +907,7 @@ class DSAPI:
         self._api.DSGetWLMEnabled.argtypes = []
         self._api.DSGetWLMEnabled.restype = c_int
 
-        res = self._api.DSGetWLMEnabled()
+        res: int = self._api.DSGetWLMEnabled()
 
         if not res:
             self._raise_last_error("DSGetWLMEnabled")
@@ -896,7 +918,7 @@ class DSAPI:
         self._api.DSSetGenerateOpMetaData.argtypes = [POINTER(DSJOB), c_int]
         self._api.DSSetGenerateOpMetaData.restype = c_int
 
-        res = self._api.DSSetGenerateOpMetaData(job_handle, value)
+        res: int = self._api.DSSetGenerateOpMetaData(job_handle, value)
 
         if res != 0:
             self._raise_last_error("DSSetGenerateOpMetaData")
@@ -910,7 +932,7 @@ class DSAPI:
         ]
         self._api.DSSetDisableProjectHandler.restype = c_int
 
-        res = self._api.DSSetDisableProjectHandler(project_handle, value)
+        res: int = self._api.DSSetDisableProjectHandler(project_handle, value)
 
         if res != 0:
             self._raise_last_error("DSSetDisableProjectHandler")
@@ -921,7 +943,7 @@ class DSAPI:
         self._api.DSSetDisableJobHandler.argtypes = [POINTER(DSJOB), c_int]
         self._api.DSSetDisableJobHandler.restype = c_int
 
-        res = self._api.DSSetDisableJobHandler(job_handle, value)
+        res: int = self._api.DSSetDisableJobHandler(job_handle, value)
 
         if res != 0:
             self._raise_last_error("DSSetDisableJobHandler")
@@ -947,7 +969,7 @@ class DSAPI:
 
     def DSUnloadLibrary(self) -> None:
         self.__api = None
-        self.__project_name = None
+        self.__project_handle = None
 
     def _raise_last_error(self, func: str) -> NoReturn:
         code, msg = self.DSGetLastError()
