@@ -157,6 +157,7 @@ class Job:
         self._api = api
         self._handle = handle
         self._closed = False
+        self._locked = False
 
     def __enter__(self) -> Self:
         return self
@@ -304,7 +305,19 @@ class Job:
         if self._closed:
             return
         self._api.DSCloseJob(self._handle)
+        # If the job is locked when `DSCloseJob` is called, it is unlocked.
+        self._locked = False
         self._closed = True
+
+    def unlock(self) -> None:
+        """Unlock the job."""
+        self._api.DSUnlockJob(self._handle)
+        self._locked = False
+
+    def lock(self) -> None:
+        """Lock the job."""
+        self._api.DSLockJob(self._handle)
+        self._locked = True
 
     def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
         return self._api.DSGetJobInfo(self._handle, info_type)
