@@ -152,7 +152,7 @@ class DSAPI:
         error_msg = ""
 
         # If `ProjectHandle` is NULL, `DSGetLastErrorMsg` retrieves the error
-        # message associated with the last call to `DSOpenProject`` or
+        # message associated with the last call to `DSOpenProject` or
         #  `DSGetProjectList`.
         if self.__project_handle is not None:
             error_msg = decode_bytes(
