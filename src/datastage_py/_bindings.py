@@ -652,7 +652,7 @@ class DSAPI:
         search_criteria: str,
         starting_category: str,
         *,
-        subcategories: bool = True,
+        subcategories: bool = False,
     ) -> None | DSREPOSJOBINFO:
         self._api.DSGetReposInfo.argtypes = [
             POINTER(DSPROJECT),
