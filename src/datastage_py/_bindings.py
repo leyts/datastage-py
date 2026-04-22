@@ -650,7 +650,8 @@ class DSAPI:
         info_type: ReposJobFilter,
         search_criteria: str,
         starting_category: str,
-        subcategories: int = 1,
+        *,
+        subcategories: bool = True,
     ) -> None | DSREPOSJOBINFO:
         self._api.DSGetReposInfo.argtypes = [
             POINTER(DSPROJECT),
@@ -673,7 +674,7 @@ class DSAPI:
             info_type,
             encode_string(search_criteria),
             encode_string(starting_category),
-            subcategories,
+            int(subcategories),
             pointer(repos_info),
         )
 
