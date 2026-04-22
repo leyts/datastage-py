@@ -613,7 +613,8 @@ class DSAPI:
         project_handle: ProjectHandle,
         relationship_type: ReposRelationshipType,
         object_name: str,
-        recursive: int = 0,
+        *,
+        recursive: bool = False,
     ) -> None | DSREPOSUSAGE:
         self._api.DSGetReposUsage.argtypes = [
             POINTER(DSPROJECT),
@@ -632,7 +633,7 @@ class DSAPI:
             project_handle,
             relationship_type,
             encode_string(object_name),
-            recursive,
+            int(recursive),
             pointer(repos_usage),
         )
 
