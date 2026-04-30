@@ -3,6 +3,8 @@ name = "datastage-py"
 version = "0.6.0"
 description = "A Python wrapper for the IBM InfoSphere DataStage API."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENCE"]
 authors = [
     { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" }
 ]
