@@ -9,7 +9,12 @@ authors = [
     { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" }
 ]
 requires-python = ">=3.14"
+keywords = ["api", "ibm"]
 dependencies = []
+
+[project.urls]
+Repository = "https://github.com/leyts/datastage-py"
+Issues = "https://github.com/leyts/datastage-py/issues"
 
 [dependency-groups]
 dev = [
