@@ -165,7 +165,7 @@ class DSAPI:
             POINTER(DSPROJECT),
             c_char_p,
         ]
-        self._api.DSOpenJob.restype = c_void_p
+        self._api.DSOpenJob.restype = POINTER(DSJOB)
 
         handle: JobHandle | None = self._api.DSOpenJob(
             project_handle, c_char_p(encode_string(name))
