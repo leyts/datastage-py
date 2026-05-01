@@ -4,12 +4,12 @@ from ctypes import (
     CDLL,
     POINTER,
     _Pointer,
+    byref,
     c_char,
     c_char_p,
     c_int,
     c_void_p,
     create_string_buffer,
-    pointer,
 )
 from typing import TYPE_CHECKING, Literal, NoReturn
 
@@ -135,7 +135,7 @@ class DSAPI:
 
         proj_info = DSPROJECTINFO()
         res: int = self._api.DSGetProjectInfo(
-            project_handle, info_type, pointer(proj_info)
+            project_handle, info_type, byref(proj_info)
         )
 
         if res != 0:
@@ -187,7 +187,7 @@ class DSAPI:
 
         job_info = DSJOBINFO()
         res: int = self._api.DSGetJobInfo(
-            job_handle, info_type, pointer(job_info)
+            job_handle, info_type, byref(job_info)
         )
 
         if res != 0:
@@ -210,7 +210,7 @@ class DSAPI:
             job_handle,
             encode_string(name),
             info_type,
-            pointer(stage_info),
+            byref(stage_info),
         )
 
         if res != 0:
@@ -239,7 +239,7 @@ class DSAPI:
             encode_string(stage_name),
             encode_string(name),
             info_type,
-            pointer(link_info),
+            byref(link_info),
         )
 
         if res != 0:
@@ -268,7 +268,7 @@ class DSAPI:
             encode_string(stage_name),
             encode_string(name),
             info_type,
-            pointer(var_info),
+            byref(var_info),
         )
 
         if res != 0:
@@ -297,7 +297,7 @@ class DSAPI:
             encode_string(stage_name),
             encode_string(name),
             info_type,
-            pointer(cust_info),
+            byref(cust_info),
         )
 
         if res != 0:
@@ -343,7 +343,7 @@ class DSAPI:
             start_time,
             end_time,
             max_number,
-            pointer(log_info),
+            byref(log_info),
         )
 
         if res != 0:
@@ -360,7 +360,7 @@ class DSAPI:
         self._api.DSFindNextLogEntry.restype = c_int
 
         log_event = DSLOGEVENT()
-        res: int = self._api.DSFindNextLogEntry(job_handle, pointer(log_event))
+        res: int = self._api.DSFindNextLogEntry(job_handle, byref(log_event))
 
         if res != 0:
             if res == DSNoMoreError.code:
@@ -380,7 +380,7 @@ class DSAPI:
 
         log_detail = DSLOGDETAILFULL()
         res: int = self._api.DSGetLogEntryFull(
-            job_handle, event_id, pointer(log_detail)
+            job_handle, event_id, byref(log_detail)
         )
 
         if res != 0:
@@ -399,7 +399,7 @@ class DSAPI:
 
         log_detail = DSLOGDETAIL()
         res: int = self._api.DSGetLogEntry(
-            job_handle, event_id, pointer(log_detail)
+            job_handle, event_id, byref(log_detail)
         )
 
         if res != 0:
@@ -434,7 +434,7 @@ class DSAPI:
             job_handle,
             run_number,
             encode_string(filter_type),
-            pointer(events_pointer),
+            byref(events_pointer),
         )
 
         if res != 0:
@@ -551,7 +551,7 @@ class DSAPI:
         self._api.DSSetParam.restype = c_int
 
         res: int = self._api.DSSetParam(
-            job_handle, encode_string(name), pointer(param)
+            job_handle, encode_string(name), byref(param)
         )
 
         if res != 0:
@@ -567,7 +567,7 @@ class DSAPI:
 
         param_info = DSPARAMINFO()
         res: int = self._api.DSGetParamInfo(
-            job_handle, encode_string(name), pointer(param_info)
+            job_handle, encode_string(name), byref(param_info)
         )
 
         if res != 0:
@@ -601,7 +601,7 @@ class DSAPI:
             job_handle,
             report_type,
             encode_string(line_sep),
-            pointer(report_info),
+            byref(report_info),
         )
 
         if res != 0:
@@ -634,7 +634,7 @@ class DSAPI:
             relationship_type,
             encode_string(object_name),
             int(recursive),
-            pointer(repos_usage),
+            byref(repos_usage),
         )
 
         if res < 0:
@@ -676,7 +676,7 @@ class DSAPI:
             encode_string(search_criteria),
             encode_string(starting_category),
             int(subcategories),
-            pointer(repos_info),
+            byref(repos_info),
         )
 
         if res < 0:
