@@ -1,5 +1,8 @@
 # datastage-py
 
+![PyPI - Version](https://img.shields.io/pypi/v/datastage-py)
+![PyPI - License](https://img.shields.io/pypi/l/datastage-py)
+
 > [!WARNING]
 > This package is under development. The API is subject to breaking changes.
 
