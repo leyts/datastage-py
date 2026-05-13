@@ -3,23 +3,23 @@ name = "datastage-py"
 version = "0.7.0"
 description = "A Python wrapper for the IBM InfoSphere DataStage API."
 readme = "README.md"
+requires-python = ">=3.14"
 license = "MIT"
 license-files = ["LICENCE"]
 authors = [
-    { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" }
+  { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" },
 ]
-requires-python = ">=3.14"
 keywords = ["api", "ibm"]
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/leyts/datastage-py"
 Issues = "https://github.com/leyts/datastage-py/issues"
+Repository = "https://github.com/leyts/datastage-py"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.11",
-    "ty>=0.0.32",
+  "ruff>=0.15.11",
+  "ty>=0.0.32",
 ]
 
 [build-system]
@@ -36,34 +36,34 @@ docstring-code-line-length = 20
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "W191",
-    "E111",
-    "E114",
-    "E117",
-    "D206",
-    "D300",
-    "Q000",
-    "Q001",
-    "Q002",
-    "Q003",
-    "Q004",
-    "COM812",
-    "COM819",
-    "N802",
-    "TD002",
-    "TD003",
-    "D101",
-    "D102",
-    "D103",
+  "W191",
+  "E111",
+  "E114",
+  "E117",
+  "D206",
+  "D300",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "Q004",
+  "COM812",
+  "COM819",
+  "N802",
+  "TD002",
+  "TD003",
+  "D101",
+  "D102",
+  "D103",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "src/datastage_py/_structures.py" = [
-    "RUF012",
+  "RUF012",
 ]
 "src/datastage_py/exceptions.py" = [
-    "E501",
-    "S105",
+  "E501",
+  "S105",
 ]
 
 [tool.ruff.lint.pydocstyle]
