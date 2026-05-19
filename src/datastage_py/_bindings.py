@@ -958,10 +958,6 @@ class DSAPI:
         The DataStage API has a runtime dependency on the `vmdsapi.dll` library
         on Windows and `libvmdsapi.so` library on Unix.
         """
-        if not file.is_file():
-            msg = f"Library not found: {file!r}"
-            raise FileNotFoundError(msg)
-
         try:
             self.__api = CDLL(file)
         except OSError as exc:
