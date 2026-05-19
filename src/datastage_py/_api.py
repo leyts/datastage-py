@@ -229,7 +229,7 @@ class Job:
         return decode_bytes(info.info.jobController)
 
     @property
-    def wave_number(self) -> int:
+    def wave(self) -> int:
         """Wave number of the last or current run."""
         info = self._get_info(JobInfoType.WAVE_NUMBER)
         return int(info.info.jobWaveNumber)
