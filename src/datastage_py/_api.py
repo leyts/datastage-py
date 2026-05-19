@@ -255,7 +255,7 @@ class Job:
         return decode_bytes(info.info.jobFullDesc)
 
     @property
-    def list_parameters(self) -> list[str]:
+    def list_params(self) -> list[str]:
         """List all job parameter names."""
         info = self._get_info(JobInfoType.PARAMETER_LIST)
         return parse_null_separated(info.info.paramList)
