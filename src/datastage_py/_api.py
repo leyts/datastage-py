@@ -61,11 +61,6 @@ class Server:
         return f"{type(self).__name__}(api={self._api!r})"
 
     @property
-    def api(self) -> DSAPI:
-        """Low-level API instance."""
-        return self._api
-
-    @property
     def list_projects(self) -> list[str]:
         """List all projects on the server."""
         return self._api.DSGetProjectList()
