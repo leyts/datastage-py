@@ -175,7 +175,7 @@ class Job:
         return decode_bytes(info.info.jobName)
 
     @property
-    def invocation_id(self) -> str:
+    def invocation(self) -> str:
         """Job invocation name."""
         info = self._get_info(JobInfoType.INVOCATION_ID)
         return decode_bytes(info.info.jobInvocationId)
