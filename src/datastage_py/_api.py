@@ -4,12 +4,12 @@ from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from datastage_py import RunMode
 from datastage_py._constants import (
     JobInfoType,
     JobStatus,
     LinkInfoType,
     ProjectInfoType,
+    RunMode,
     StageInfoType,
 )
 from datastage_py.utils import (
