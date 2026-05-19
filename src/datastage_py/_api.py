@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from datastage_py import RunMode
 from datastage_py._constants import (
     JobInfoType,
     JobStatus,
@@ -317,6 +318,22 @@ class Job:
         """Lock the job."""
         self._api.DSLockJob(self._handle)
         self._locked = True
+
+    def start(self) -> None:
+        """Start the job."""
+        self._api.DSRunJob(self._handle, RunMode.NORMAL)
+
+    def reset(self) -> None:
+        """Reset the job."""
+        self._api.DSRunJob(self._handle, RunMode.RESET)
+
+    def validate(self) -> None:
+        """Validate the job."""
+        self._api.DSRunJob(self._handle, RunMode.VALIDATE)
+
+    def restart(self) -> None:
+        """Restart the job with original parameter values."""
+        self._api.DSRunJob(self._handle, RunMode.RESTART)
 
     def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
         return self._api.DSGetJobInfo(self._handle, info_type)
