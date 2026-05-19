@@ -322,6 +322,15 @@ class Job:
         """Restart the job with original parameter values."""
         self._api.DSRunJob(self._handle, RunMode.RESTART)
 
+    def wait(self) -> JobStatus:
+        """Block until the current run completes; return its final status.
+
+        Must follow a `start`, `reset`, `validate` or `restart` call on this
+        handle in the current process.
+        """
+        self._api.DSWaitForJob(self._handle)
+        return self.status
+
     def _get_info(self, info_type: JobInfoType) -> DSJOBINFO:
         return self._api.DSGetJobInfo(self._handle, info_type)
 
