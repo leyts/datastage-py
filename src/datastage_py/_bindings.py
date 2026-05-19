@@ -968,10 +968,6 @@ class DSAPI:
             msg = "Cannot load the library"
             raise OSError(msg) from exc
 
-    def DSUnloadLibrary(self) -> None:
-        self.__api = None
-        self.__project_handle = None
-
     def _raise_last_error(self, func: str) -> NoReturn:
         code, msg = self.DSGetLastError()
         raise_for_error(func, code, msg)
