@@ -66,16 +66,14 @@ type JobHandle = _Pointer[DSJOB]
 class DSAPI:
     DSAPI_VERSION = 1
 
-    def __init__(self) -> None:
-        self.__api: CDLL | None = None
-        self.__project_handle: ProjectHandle | None = None
+    def __init__(self, library: Path) -> None:
+        """Load the DataStage shared library.
 
-    @property
-    def _api(self) -> CDLL:
-        if self.__api is None:
-            msg = "Library not loaded; call DSLoadLibrary first"
-            raise RuntimeError(msg)
-        return self.__api
+        Args:
+            library: Path to `libvmdsapi.so` (Unix) or `vmdsapi.dll` (Windows).
+        """
+        self._api = CDLL(library)
+        self.__project_handle: ProjectHandle | None = None
 
     def DSSetServerParams(
         self,
@@ -948,21 +946,6 @@ class DSAPI:
 
         if res != 0:
             self._raise_last_error("DSSetDisableJobHandler")
-
-    def DSLoadLibrary(self, file: Path) -> None:
-        """Load the shared library.
-
-        Args:
-            file: Path to library file.
-
-        The DataStage API has a runtime dependency on the `vmdsapi.dll` library
-        on Windows and `libvmdsapi.so` library on Unix.
-        """
-        try:
-            self.__api = CDLL(file)
-        except OSError as exc:
-            msg = "Cannot load the library"
-            raise OSError(msg) from exc
 
     def _raise_last_error(self, func: str) -> NoReturn:
         code, msg = self.DSGetLastError()
