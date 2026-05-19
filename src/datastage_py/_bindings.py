@@ -73,7 +73,7 @@ class DSAPI:
             library: Path to `libvmdsapi.so` (Unix) or `vmdsapi.dll` (Windows).
         """
         self._api = CDLL(library)
-        self.__project_handle: ProjectHandle | None = None
+        self._project_handle: ProjectHandle | None = None
 
     def DSSetServerParams(
         self,
@@ -118,7 +118,7 @@ class DSAPI:
         if handle is None:
             self._raise_last_error("DSOpenProject")
 
-        self.__project_handle = handle
+        self._project_handle = handle
         return handle
 
     def DSGetProjectInfo(
@@ -152,9 +152,9 @@ class DSAPI:
         # If `ProjectHandle` is NULL, `DSGetLastErrorMsg` retrieves the error
         # message associated with the last call to `DSOpenProject` or
         #  `DSGetProjectList`.
-        if self.__project_handle is not None:
+        if self._project_handle is not None:
             error_msg = decode_bytes(
-                self._api.DSGetLastErrorMsg(self.__project_handle)
+                self._api.DSGetLastErrorMsg(self._project_handle)
             )
         return error_code, error_msg
 
@@ -471,7 +471,7 @@ class DSAPI:
 
         if res != 0:
             self._raise_last_error("DSCloseProject")
-        self.__project_handle = None
+        self._project_handle = None
 
     def DSSetJobLimit(
         self, job_handle: JobHandle, limit_type: LimitType, value: int
