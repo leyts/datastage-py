@@ -79,7 +79,6 @@ class Project:
     def __init__(self, api: DSAPI, handle: ProjectHandle) -> None:
         self._api = api
         self._handle = handle
-        self._closed = False
 
     def __enter__(self) -> Self:
         return self
@@ -140,11 +139,8 @@ class Project:
         return Job(self._api, handle)
 
     def close(self) -> None:
-        """Close the project. Safe to call multiple times."""
-        if self._closed:
-            return
+        """Close the project."""
         self._api.DSCloseProject(self._handle)
-        self._closed = True
 
     def _get_info(self, info_type: ProjectInfoType) -> DSPROJECTINFO:
         return self._api.DSGetProjectInfo(self._handle, info_type)
@@ -156,8 +152,6 @@ class Job:
     def __init__(self, api: DSAPI, handle: JobHandle) -> None:
         self._api = api
         self._handle = handle
-        self._closed = False
-        self._locked = False
 
     def __enter__(self) -> Self:
         return self
@@ -301,23 +295,16 @@ class Job:
         return Stage(self._api, self._handle, name)
 
     def close(self) -> None:
-        """Close the job. Safe to call multiple times."""
-        if self._closed:
-            return
+        """Close the job."""
         self._api.DSCloseJob(self._handle)
-        # If the job is locked when `DSCloseJob` is called, it is unlocked.
-        self._locked = False
-        self._closed = True
 
     def unlock(self) -> None:
         """Unlock the job."""
         self._api.DSUnlockJob(self._handle)
-        self._locked = False
 
     def lock(self) -> None:
         """Lock the job."""
         self._api.DSLockJob(self._handle)
-        self._locked = True
 
     def start(self) -> None:
         """Start the job."""
