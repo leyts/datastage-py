@@ -11,7 +11,7 @@ from ctypes import (
     c_void_p,
     create_string_buffer,
 )
-from typing import TYPE_CHECKING, Literal, NoReturn
+from typing import TYPE_CHECKING, ClassVar, Literal, NoReturn
 
 from datastage_py._constants import (
     CustInfoType,
@@ -64,7 +64,7 @@ type JobHandle = _Pointer[DSJOB]
 
 
 class DSAPI:
-    DSAPI_VERSION = 1
+    DSAPI_VERSION: ClassVar[int] = 1
 
     def __init__(self, library: Path) -> None:
         """Load the DataStage shared library.
