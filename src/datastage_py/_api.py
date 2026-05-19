@@ -1,7 +1,6 @@
 """High-level wrapper classes for the IBM DataStage API."""
 
 from datetime import timedelta
-from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -98,31 +97,31 @@ class Project:
         """Raw project handle."""
         return self._handle
 
-    @cached_property
+    @property
     def name(self) -> str:
         """Project name."""
         info = self._get_info(ProjectInfoType.NAME)
         return decode_bytes(info.info.projectName)
 
-    @cached_property
+    @property
     def path(self) -> Path:
         """Project directory path."""
         info = self._get_info(ProjectInfoType.PATH)
         return Path(decode_bytes(info.info.projectPath))
 
-    @cached_property
+    @property
     def hostname(self) -> str:
         """Engine hostname."""
         info = self._get_info(ProjectInfoType.HOSTNAME)
         return decode_bytes(info.info.hostName)
 
-    @cached_property
+    @property
     def install_tag(self) -> str:
         """Engine installation tag."""
         info = self._get_info(ProjectInfoType.INSTALL_TAG)
         return decode_bytes(info.info.installTag)
 
-    @cached_property
+    @property
     def tcp_port(self) -> int:
         """Engine TCP port."""
         info = self._get_info(ProjectInfoType.TCP_PORT)
@@ -176,7 +175,7 @@ class Job:
         """Raw job handle."""
         return self._handle
 
-    @cached_property
+    @property
     def name(self) -> str:
         """Job name."""
         info = self._get_info(JobInfoType.NAME)
@@ -331,7 +330,7 @@ class Stage:
         self._handle = handle
         self._name = name
 
-    @cached_property
+    @property
     def name(self) -> str:
         """Stage name."""
         info = self._get_info(StageInfoType.NAME)
@@ -441,7 +440,7 @@ class Link:
         self._stage_name = stage_name
         self._name = name
 
-    @cached_property
+    @property
     def name(self) -> str:
         info = self._get_info(LinkInfoType.NAME)
         return decode_bytes(info.info.linkName)
