@@ -12,6 +12,7 @@ from datastage_py._constants import (
     RunMode,
     StageInfoType,
 )
+from datastage_py._params import JobParameter
 from datastage_py.utils import (
     decode_bytes,
     parse_null_separated,
@@ -19,11 +20,13 @@ from datastage_py.utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from datetime import datetime
     from types import TracebackType
     from typing import Self
 
     from datastage_py._bindings import DSAPI, JobHandle, ProjectHandle
+    from datastage_py._params import ParamValue
     from datastage_py._structures import (
         DSJOBINFO,
         DSLINKINFO,
@@ -305,6 +308,15 @@ class Job:
     def lock(self) -> None:
         """Lock the job."""
         self._api.DSLockJob(self._handle)
+
+    def set_params(self, params: Mapping[str, ParamValue]) -> None:
+        """Set job parameters.
+
+        Each value's `paramType` is inferred from its Python type.
+        """
+        for name, value in params.items():
+            param = JobParameter(name, value)
+            self._api.DSSetParam(self._handle, name, param.to_param())
 
     def start(self) -> None:
         """Start the job."""

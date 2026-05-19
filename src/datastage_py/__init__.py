@@ -21,10 +21,12 @@ from datastage_py._constants import (
     StageInfoType,
     VarInfoType,
 )
+from datastage_py._params import Encrypted
 
 __all__ = [
     "DSAPI",
     "CustInfoType",
+    "Encrypted",
     "EnvVarType",
     "Job",
     "JobHandle",
