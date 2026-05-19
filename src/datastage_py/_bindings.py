@@ -579,14 +579,13 @@ class DSAPI:
         job_handle: JobHandle,
         report_type: ReportType,
         line_sep: Literal["CRLF", "LF", "CR"],
-    ):  # TODO: Add type hint
+    ) -> str:
         """Generate a job report.
 
         Args:
             job_handle: Job handle.
             report_type: Report type.
-            line_sep: Line separator in the report. Defaults to CRLF on
-                Windows and LF on other platforms.
+            line_sep: Line separator in the report.
         """
         self._api.DSMakeJobReport.argtypes = [
             POINTER(DSJOB),
