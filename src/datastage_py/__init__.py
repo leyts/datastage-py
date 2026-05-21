@@ -21,7 +21,7 @@ from datastage_py._constants import (
     StageInfoType,
     VarInfoType,
 )
-from datastage_py._params import Encrypted
+from datastage_py._params import Encrypted, ParamValue
 
 __all__ = [
     "DSAPI",
@@ -37,6 +37,7 @@ __all__ = [
     "LinkInfoType",
     "LogEventType",
     "ParamType",
+    "ParamValue",
     "Project",
     "ProjectHandle",
     "ProjectInfoType",
