@@ -329,6 +329,15 @@ class Job:
         """Restart the job with original parameter values."""
         self._api.DSRunJob(self._handle, RunMode.RESTART)
 
+    def stop(self) -> None:
+        """Stop the current run.
+
+        The stop request is sent regardless of the job's current status and
+        does not require holding a lock. Use after a prior `start`, `reset`,
+        `validate` or `restart` call.
+        """
+        self._api.DSStopJob(self._handle)
+
     def wait(self) -> JobStatus:
         """Block until the current run completes; return its final status.
 
