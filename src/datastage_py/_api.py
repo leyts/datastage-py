@@ -1,5 +1,6 @@
 """High-level wrapper classes for the IBM DataStage API."""
 
+from contextlib import contextmanager
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -20,7 +21,7 @@ from datastage_py.utils import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Generator, Mapping
     from datetime import datetime
     from types import TracebackType
     from typing import Self
@@ -296,37 +297,51 @@ class Job:
         """Close the job."""
         self._api.DSCloseJob(self._handle)
 
-    def unlock(self) -> None:
-        """Unlock the job."""
-        self._api.DSUnlockJob(self._handle)
-
-    def lock(self) -> None:
-        """Lock the job."""
+    @contextmanager
+    def lock(self) -> Generator[Self]:
+        """Lock the job for the duration of the block; unlock on exit."""
         self._api.DSLockJob(self._handle)
+        try:
+            yield self
+        finally:
+            self._api.DSUnlockJob(self._handle)
 
     def set_params(self, params: Mapping[str, ParamValue]) -> None:
         """Set job parameters.
 
-        Each value's `paramType` is inferred from its Python type.
+        Each value's `paramType` is inferred from its Python type. The job
+        must be locked; use ``with job.lock():``.
         """
         for name, value in params.items():
             param = JobParameter(name, value)
             self._api.DSSetParam(self._handle, name, param.to_param())
 
     def start(self) -> None:
-        """Start the job."""
+        """Start the job.
+
+        The job must be locked; use ``with job.lock():``.
+        """
         self._api.DSRunJob(self._handle, RunMode.NORMAL)
 
     def reset(self) -> None:
-        """Reset the job."""
+        """Reset the job.
+
+        The job must be locked; use ``with job.lock():``.
+        """
         self._api.DSRunJob(self._handle, RunMode.RESET)
 
     def validate(self) -> None:
-        """Validate the job."""
+        """Validate the job.
+
+        The job must be locked; use ``with job.lock():``.
+        """
         self._api.DSRunJob(self._handle, RunMode.VALIDATE)
 
     def restart(self) -> None:
-        """Restart the job with original parameter values."""
+        """Restart the job with original parameter values.
+
+        The job must be locked; use ``with job.lock():``.
+        """
         self._api.DSRunJob(self._handle, RunMode.RESTART)
 
     def stop(self) -> None:
