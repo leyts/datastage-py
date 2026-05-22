@@ -31,7 +31,6 @@ line-length = 79
 
 [tool.ruff.format]
 docstring-code-format = true
-docstring-code-line-length = 20
 
 [tool.ruff.lint]
 select = ["ALL"]
