@@ -8,6 +8,14 @@
 
 A Python wrapper for the [IBM InfoSphere DataStage API](https://www.ibm.com/docs/en/iis/11.7.0?topic=interfaces-infosphere-datastage-development-kit).
 
+## Requirements
+
+Source the `dsenv` file:
+
+```bash
+source /opt/IBM/InformationServer/Server/DSEngine/dsenv
+```
+
 ## Licence
 
 [MIT](LICENCE)

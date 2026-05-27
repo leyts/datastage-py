@@ -1,5 +1,6 @@
 """Python ctypes wrapper around the IBM DataStage API."""
 
+import platform
 from ctypes import (
     CDLL,
     POINTER,
@@ -11,7 +12,7 @@ from ctypes import (
     c_void_p,
     create_string_buffer,
 )
-from typing import TYPE_CHECKING, ClassVar, Literal, NoReturn
+from typing import ClassVar, Literal, NoReturn
 
 from datastage_py._constants import (
     CustInfoType,
@@ -56,8 +57,9 @@ from datastage_py.utils import (
     parse_null_separated,
 )
 
-if TYPE_CHECKING:
-    from pathlib import Path
+_LIBRARY_NAME = (
+    "vmdsapi.dll" if platform.system() == "Windows" else "libvmdsapi.so"
+)
 
 type ProjectHandle = _Pointer[DSPROJECT]
 type JobHandle = _Pointer[DSJOB]
@@ -66,13 +68,13 @@ type JobHandle = _Pointer[DSJOB]
 class DSAPI:
     DSAPI_VERSION: ClassVar[int] = 1
 
-    def __init__(self, library: Path) -> None:
-        """Load the DataStage shared library.
+    def __init__(self) -> None:
+        """Load the DataStage shared libraries.
 
-        Args:
-            library: Path to `libvmdsapi.so` (Unix) or `vmdsapi.dll` (Windows).
+        Requires the `dsenv` file to be sourced so that the loader can locate
+        the libraries.
         """
-        self._api = CDLL(library)
+        self._api = CDLL(_LIBRARY_NAME)
         self._project_handle: ProjectHandle | None = None
 
     def DSSetServerParams(
