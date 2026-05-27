@@ -79,8 +79,8 @@ class DSAPI:
 
     def DSSetServerParams(
         self,
-        domain_name: str,
-        server_name: str | None = None,
+        domain: str,
+        server: str | None = None,
         username: str | None = None,
         password: str | None = None,
     ) -> None:
@@ -93,10 +93,10 @@ class DSAPI:
         self._api.DSSetServerParams.restype = c_void_p
 
         self._api.DSSetServerParams(
-            encode_string(domain_name),
+            encode_string(domain),
             encode_string(username) if username is not None else None,
             encode_string(password) if password is not None else None,
-            encode_string(server_name) if server_name is not None else None,
+            encode_string(server) if server is not None else None,
         )
 
     def DSGetProjectList(self) -> list[str]:
