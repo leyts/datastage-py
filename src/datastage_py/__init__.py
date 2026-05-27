@@ -1,6 +1,6 @@
 """datastage-py package."""
 
-from datastage_py._api import Job, Link, Project, Server, Stage
+from datastage_py._api import DSClient, Job, Link, Project, Stage
 from datastage_py._bindings import DSAPI, JobHandle, ProjectHandle
 from datastage_py._constants import (
     CustInfoType,
@@ -26,6 +26,7 @@ from datastage_py._params import Encrypted, ParamValue
 __all__ = [
     "DSAPI",
     "CustInfoType",
+    "DSClient",
     "Encrypted",
     "EnvVarType",
     "Job",
@@ -47,7 +48,6 @@ __all__ = [
     "ReposObjectType",
     "ReposRelationshipType",
     "RunMode",
-    "Server",
     "Stage",
     "StageInfoType",
     "VarInfoType",

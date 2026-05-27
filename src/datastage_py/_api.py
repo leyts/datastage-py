@@ -36,8 +36,8 @@ if TYPE_CHECKING:
     )
 
 
-class Server:
-    """High-level entry point for a DataStage server."""
+class DSClient:
+    """Initialise the client."""
 
     def __init__(
         self,
