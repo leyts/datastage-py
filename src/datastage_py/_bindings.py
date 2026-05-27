@@ -159,10 +159,7 @@ class DSAPI:
         return error_code, error_msg
 
     def DSOpenJob(self, project_handle: ProjectHandle, name: str) -> JobHandle:
-        self._api.DSOpenJob.argtypes = [
-            POINTER(DSPROJECT),
-            c_char_p,
-        ]
+        self._api.DSOpenJob.argtypes = [POINTER(DSPROJECT), c_char_p]
         self._api.DSOpenJob.restype = POINTER(DSJOB)
 
         handle: JobHandle | None = self._api.DSOpenJob(
