@@ -3,9 +3,21 @@ revision = 3
 requires-python = ">=3.14"
 
 [[package]]
+name = "ctypes-plus"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/35/9b/6e7269b47523bbb8ab36479ad931ff9ef5397ccefcdb69867fbc1964ce8d/ctypes_plus-0.2.0.tar.gz", hash = "sha256:d75ef790347b0a7fbe6a1cdd31a4eaa40d117a796f3e463ccd1f850ce14a8ddf", size = 5083, upload-time = "2026-05-29T17:42:42.922Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/66/7a78c7dab14c4102612c47e25db5072ae5817364bd436ed2d9ec6a6a9346/ctypes_plus-0.2.0-py3-none-any.whl", hash = "sha256:9d1dc49eefff1d19d2e59c9dcda777b1f642e46ff3041ac25206cf703b9cc7ea", size = 7008, upload-time = "2026-05-29T17:42:41.953Z" },
+]
+
+[[package]]
 name = "datastage-py"
 version = "0.10.0"
 source = { editable = "." }
+dependencies = [
+    { name = "ctypes-plus" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -14,6 +26,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "ctypes-plus", specifier = ">=0.2.0" }]
 
 [package.metadata.requires-dev]
 dev = [

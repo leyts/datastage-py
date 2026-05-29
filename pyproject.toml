@@ -10,7 +10,9 @@ authors = [
   { name = "Leyton Addison-Roach", email = "git@laddisonroach.com" },
 ]
 keywords = ["api", "ibm"]
-dependencies = []
+dependencies = [
+  "ctypes-plus>=0.2.0",
+]
 
 [project.urls]
 Issues = "https://github.com/leyts/datastage-py/issues"
