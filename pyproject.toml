@@ -13,8 +13,8 @@ keywords = ["api", "ibm"]
 dependencies = []
 
 [project.urls]
-Issues = "https://github.com/leyts/datastage-py/issues"
-Repository = "https://github.com/leyts/datastage-py"
+Issues = "https://git.laddisonroach.com/leyts/datastage-py/issues"
+Repository = "https://git.laddisonroach.com/leyts/datastage-py"
 
 [dependency-groups]
 dev = [
